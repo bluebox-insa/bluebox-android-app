@@ -47,12 +47,11 @@
 
     <ListView
         android:id="@+id/deviceList"
-        android:layout_width="317dp"
-        android:layout_height="429dp"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
         app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/resetButton"></ListView>
 

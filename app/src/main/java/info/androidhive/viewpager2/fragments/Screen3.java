@@ -1,6 +1,7 @@
 package info.androidhive.viewpager2.fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,7 +65,15 @@ public class Screen3 extends Fragment {
         deviceList.add("b");
         deviceList.add("c");
 
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, deviceList);
+        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, deviceList){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+                textView.setTextColor(Color.WHITE);
+                return view;
+            }
+        };
         devicesComponent = (ListView) v.findViewById(R.id.deviceList);
         devicesComponent.setAdapter(adapter);
         devicesComponent.setOnItemClickListener(new AdapterView.OnItemClickListener() {

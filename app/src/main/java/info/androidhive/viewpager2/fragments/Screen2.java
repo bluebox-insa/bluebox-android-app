@@ -1,6 +1,7 @@
 package info.androidhive.viewpager2.fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,8 @@ import java.util.List;
 
 import info.androidhive.viewpager2.R;
 import info.androidhive.viewpager2.RequestHelper;
+import info.androidhive.viewpager2.Tweet;
+import info.androidhive.viewpager2.TweetAdapter;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.widget.Toast.LENGTH_LONG;
@@ -35,8 +38,8 @@ public class Screen2 extends Fragment {
     SharedPreferences.Editor editor;
     String sharedHostname;
 
-    private List<String> deviceList;
-    private ArrayAdapter<String> adapter;
+    private List<Tweet> deviceList;
+    private ArrayAdapter<Tweet> adapter;
     private ListView devicesComponent;
     private Button scanButton;
     private Button resetButton;
@@ -59,13 +62,29 @@ public class Screen2 extends Fragment {
          * - click on a device to connect to it
          * - long-press on a device to copy its MAC address to the macAddr EditText
          *--------------------------------------------------------------------------*/
-        deviceList = new ArrayList<String>();
-        deviceList.add("a");
-        deviceList.add("b");
-        deviceList.add("c");
 
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, deviceList);
+
         devicesComponent = (ListView) v.findViewById(R.id.deviceList);
+
+
+//        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, deviceList){
+//            @Override
+//            public View getView(int position, View convertView, ViewGroup parent) {
+//                View view = super.getView(position, convertView, parent);
+//                TextView textView=(TextView) view.findViewById(android.R.id.text1);
+//                textView.setTextColor(Color.WHITE);
+//                return view;
+//            }
+//        };
+        deviceList = new ArrayList<Tweet>();
+        deviceList.add(new Tweet(Color.BLACK, "Florent", "Mon premier tweet !"));
+        deviceList.add(new Tweet(Color.BLUE, "Kevin", "C'est ici que ça se passe !"));
+        deviceList.add(new Tweet(Color.GREEN, "Logan", "Que c'est beau..."));
+        deviceList.add(new Tweet(Color.RED, "Mathieu", "Il est quelle heure ??"));
+        deviceList.add(new Tweet(Color.GRAY, "Willy", "On y est presque"));
+        TweetAdapter adapter = new TweetAdapter(getContext(), deviceList);
+        devicesComponent.setAdapter(adapter);
+
         devicesComponent.setAdapter(adapter);
         devicesComponent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -75,7 +94,7 @@ public class Screen2 extends Fragment {
                 String deviceMacAddress = null;
                 String deviceName = null;
                 try {
-                    JSONObject jsonObject = new JSONObject(deviceList.get(position));
+                    JSONObject jsonObject = new JSONObject(deviceList.get(position).toString());
                     deviceMacAddress = jsonObject.getString("mac_address");
                     deviceName = jsonObject.getString("name");
                 } catch (JSONException e) {
@@ -99,9 +118,15 @@ public class Screen2 extends Fragment {
                 request.makeRequestAndParseJsonArray(sharedHostname + "/scan", true, null, new RequestHelper.CallbackJsonArray() {
                     @Override
                     public void onResponse(JSONArray jsonArray) throws JSONException {
-                        deviceList.clear();                                // remove the former elements from the list
-                        for (int i = 0; i < jsonArray.length(); i++) {      // add the new elements
-                            deviceList.add(jsonArray.getString(i));
+                        // remove the former elements from the list
+                        deviceList.clear();
+
+                        // add the new elements
+                        Tweet t;
+                        for (int i = 0; i < jsonArray.length(); i++) {
+//                            deviceList.add(jsonArray.getString(i));
+                            t = new Tweet(Color.BLACK, "Florent", jsonArray.getString(i));
+                            deviceList.add(t);
                         }
                         adapter.notifyDataSetChanged();
                     }

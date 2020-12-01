@@ -27,7 +27,7 @@ import info.androidhive.viewpager2.RequestHelper;
 import static android.content.Context.MODE_PRIVATE;
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.makeText;
-import static info.androidhive.viewpager2.fragments.FragmentViewPagerActivity.request;
+import static info.androidhive.viewpager2.MainActivity.request;
 
 public class Screen3 extends Fragment {
 

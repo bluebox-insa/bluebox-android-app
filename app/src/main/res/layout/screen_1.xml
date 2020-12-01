@@ -13,12 +13,13 @@
         android:gravity="center"
         android:text="Bonjour, BlueBox"
         android:textColor="#FFFFFF"
-        android:textSize="40dp"
+        android:textSize="@dimen/screen_title"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/textView2"

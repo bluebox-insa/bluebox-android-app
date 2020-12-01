@@ -5,6 +5,8 @@
     <string name="JSON_parsing_failed_msg">error parsing JSON</string>
 
     <string name="explications">Nous allons vous guider dans la configuration de votre Bluebox.\n\nAllons-y ! &#x23E9;&#x23E9;</string>
+    <string name="explications_fin">Votre BlueBox est configurée. Vous pouvez maintenant fermer cette application et jouer de la musique avec votre application habituelle</string>
+
     <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
 
     <!-- TODO: Remove or change this placeholder text -->

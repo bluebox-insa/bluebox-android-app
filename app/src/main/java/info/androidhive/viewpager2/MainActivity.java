@@ -1,72 +1,22 @@
 package info.androidhive.viewpager2;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.Html;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import info.androidhive.viewpager2.databinding.ActivityFragmentViewPagerBinding;
-import info.androidhive.viewpager2.databinding.ActivityMainBinding;
-import info.androidhive.viewpager2.databinding.ActivityViewsSliderBinding;
-import info.androidhive.viewpager2.fragments.FragmentViewPagerActivity;
 import info.androidhive.viewpager2.fragments.Screen1;
 import info.androidhive.viewpager2.fragments.Screen2;
 import info.androidhive.viewpager2.fragments.Screen3;
 import info.androidhive.viewpager2.fragments.Screen4;
-import info.androidhive.viewpager2.transformers.CubeInDepthTransformation;
-import info.androidhive.viewpager2.transformers.DepthPageTransformer;
-import info.androidhive.viewpager2.transformers.GateTransformation;
-import info.androidhive.viewpager2.transformers.TossTransformation;
-import info.androidhive.viewpager2.transformers.ZoomOutPageTransformer;
-import info.androidhive.viewpager2.views.ViewsSliderActivity;
-
-//public class MainActivity extends AppCompatActivity {
-//
-//    private ActivityMainBinding binding;
-//
-//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        binding = ActivityMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        /*          BEFORE       */
-//        /*  Create a view with two buttons, each button launches an activity     */
-////        binding.btnViewsDemo.setOnClickListener(view -> {
-////            startActivity(new Intent(MainActivity.this, ViewsSliderActivity.class));
-////        });
-////        binding.btnFragmentDemo.setOnClickListener(view -> {
-////            startActivity(new Intent(MainActivity.this, FragmentViewPagerActivity.class));
-////        });
-//
-//
-//        /*          AFTER      */
-//        /*  Launch the fragment activity by default     */
-//        startActivity(new Intent(MainActivity.this, FragmentViewPagerActivity.class));
-//    }
-//}
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * ViewPagerFragmentAdapter
+     *
      * This class instanciates our different screens when we slide from left to right
      * Each time, a new screen is invoked and the last screen is killed
      */

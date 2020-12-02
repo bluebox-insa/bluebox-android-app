@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -24,8 +23,8 @@ import java.util.List;
 
 import info.androidhive.viewpager2.R;
 import info.androidhive.viewpager2.RequestHelper;
-import info.androidhive.viewpager2.Tweet;
-import info.androidhive.viewpager2.TweetAdapter;
+import info.androidhive.viewpager2.Device;
+import info.androidhive.viewpager2.DeviceAdapter;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.widget.Toast.LENGTH_LONG;
@@ -38,8 +37,8 @@ public class Screen2 extends Fragment {
     SharedPreferences.Editor editor;
     String sharedHostname;
 
-    private List<Tweet> deviceList;
-    private ArrayAdapter<Tweet> adapter;
+    private List<Device> deviceList;
+    private DeviceAdapter adapter;
     private ListView devicesComponent;
     private Button scanButton;
     private Button resetButton;
@@ -65,24 +64,10 @@ public class Screen2 extends Fragment {
 
 
         devicesComponent = (ListView) v.findViewById(R.id.deviceList);
-
-
-//        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_activated_1, deviceList){
-//            @Override
-//            public View getView(int position, View convertView, ViewGroup parent) {
-//                View view = super.getView(position, convertView, parent);
-//                TextView textView=(TextView) view.findViewById(android.R.id.text1);
-//                textView.setTextColor(Color.WHITE);
-//                return view;
-//            }
-//        };
-        deviceList = new ArrayList<Tweet>();
-        deviceList.add(new Tweet(Color.BLACK, "Florent", "Mon premier tweet !"));
-        deviceList.add(new Tweet(Color.BLUE, "Kevin", "C'est ici que ça se passe !"));
-        deviceList.add(new Tweet(Color.GREEN, "Logan", "Que c'est beau..."));
-        deviceList.add(new Tweet(Color.RED, "Mathieu", "Il est quelle heure ??"));
-        deviceList.add(new Tweet(Color.GRAY, "Willy", "On y est presque"));
-        TweetAdapter adapter = new TweetAdapter(getContext(), deviceList);
+        deviceList = new ArrayList<Device>();
+        deviceList.add(new Device("Florent", "Mon premier tweet !", false));
+        deviceList.add(new Device("Willy", "On y est presque", false));
+        adapter = new DeviceAdapter(getContext(), deviceList);
         devicesComponent.setAdapter(adapter);
 
         devicesComponent.setAdapter(adapter);
@@ -122,11 +107,12 @@ public class Screen2 extends Fragment {
                         deviceList.clear();
 
                         // add the new elements
-                        Tweet t;
+                        Device newDevice;
                         for (int i = 0; i < jsonArray.length(); i++) {
-//                            deviceList.add(jsonArray.getString(i));
-                            t = new Tweet(Color.BLACK, "Florent", jsonArray.getString(i));
-                            deviceList.add(t);
+//                            deviceList.add();
+                            JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                            newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
+                            deviceList.add(newDevice);
                         }
                         adapter.notifyDataSetChanged();
                     }

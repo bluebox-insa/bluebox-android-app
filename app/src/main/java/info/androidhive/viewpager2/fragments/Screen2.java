@@ -46,12 +46,15 @@ public class Screen2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
+        init(v);
+        return v;
+    }
 
+    public void init(View v) {
         // retrieve SharedPreferences
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
         sharedHostname = pref.getString("hostname", null);
-
 
         /**-------------------------------------------------------------------------
          *                                  devicesList
@@ -62,11 +65,12 @@ public class Screen2 extends Fragment {
          * - long-press on a device to copy its MAC address to the macAddr EditText
          *--------------------------------------------------------------------------*/
 
-
         devicesComponent = (ListView) v.findViewById(R.id.deviceList);
         deviceList = new ArrayList<Device>();
-        deviceList.add(new Device("Florent", "Mon premier tweet !", false));
-        deviceList.add(new Device("Willy", "On y est presque", false));
+        deviceList.add(new Device("Enceinte 1", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("Enceinte 2", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("Appuyez sur SCAN pour ajouter des enceintes", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("Appuyez sur RESET pour déconnecter toutes les enceintes", "A1:B2:C3:D4:E5:F6", false));
         adapter = new DeviceAdapter(getContext(), deviceList);
         devicesComponent.setAdapter(adapter);
 
@@ -109,12 +113,16 @@ public class Screen2 extends Fragment {
                         // add the new elements
                         Device newDevice;
                         for (int i = 0; i < jsonArray.length(); i++) {
-//                            deviceList.add();
                             JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
-                            newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
-                            deviceList.add(newDevice);
+                            if (!jsonObject.getString("name").equals("<unknown>")) {
+                                newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
+                                deviceList.add(newDevice);
+                            }
                         }
                         adapter.notifyDataSetChanged();
+                        if(deviceList.isEmpty()){
+                            makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
+                        }
                     }
                 });
             }
@@ -135,7 +143,5 @@ public class Screen2 extends Fragment {
                 return true;
             }
         });
-
-        return v;
     }
 }

@@ -56,7 +56,7 @@ public class RequestHelper {
 
         Log.d("makeRequest", "request to "+url);
         if (pleaseWait) {
-            makeText(context, "please wait...", LENGTH_LONG).show();
+            makeText(context, "requête en cours..", LENGTH_LONG).show();
         }
         StringRequest request = new StringRequest(Request.Method.GET, url,
             // on success

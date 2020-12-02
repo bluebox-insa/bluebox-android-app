@@ -46,22 +46,49 @@ public class MainActivity extends AppCompatActivity {
 
         binding.viewPager.setAdapter(new ViewPagerFragmentAdapter(this));
 
+
+        binding.next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentPosition = binding.tabLayout.getSelectedTabPosition();
+                if (currentPosition < 3) {
+                    binding.tabLayout.selectTab(binding.tabLayout.getTabAt(currentPosition+1));
+                } else {
+                    MainActivity.this.finish();
+                }
+            }
+        });
+
+        binding.back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int currentPosition = binding.tabLayout.getSelectedTabPosition();
+                binding.tabLayout.selectTab(binding.tabLayout.getTabAt(currentPosition-1));
+            }
+        });
+
         binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.setText("\u25CF");
                 switch (tab.getPosition()) {
                     case 0:
+                        binding.back.setVisibility(View.INVISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_1));
                         break;
                     case 1:
+                        binding.back.setVisibility(View.VISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_2));
                         break;
                     case 2:
+                        binding.back.setVisibility(View.VISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_3));
+                        binding.next.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_forward));
                         break;
                     case 3:
+                        binding.back.setVisibility(View.INVISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_4));
+                        binding.next.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_check));
                         break;
                     default:
                         Log.e("onTabSelected", "tab.getPosition() is not include in [0:3] as expected.");

@@ -8,6 +8,9 @@
     <string name="explications_fin">Votre BlueBox est configurée. Vous pouvez maintenant fermer cette application et jouer de la musique avec votre application habituelle</string>
 
     <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
+    <string name="scan">scan</string>
+    <string name="reset">reset</string>
+    <string name="no_bluetooth_device_found">Aucun appareil Bluetooth n\'a été trouvé à proximité</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

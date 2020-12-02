@@ -74,7 +74,7 @@
         <ListView
             android:id="@+id/deviceList"
             android:layout_width="320dp"
-            android:layout_height="320dp"
+            android:layout_height="300dp"
             android:layout_gravity="center"
             app:backgroundTint="@color/white" />
     </LinearLayout>

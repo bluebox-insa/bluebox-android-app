@@ -46,11 +46,11 @@ public class Screen2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
-        init(v);
+        init(v, "connect");
         return v;
     }
 
-    public void init(View v) {
+    public void init(View v, String requestType) {
         // retrieve SharedPreferences
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
@@ -80,20 +80,12 @@ public class Screen2 extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // 1. retrieve informations from JSON string
-                String deviceMacAddress = null;
-                String deviceName = null;
-                try {
-                    JSONObject jsonObject = new JSONObject(deviceList.get(position).toString());
-                    deviceMacAddress = jsonObject.getString("mac_address");
-                    deviceName = jsonObject.getString("name");
-                } catch (JSONException e) {
-                    makeText(getContext(), "error there is nothing", LENGTH_LONG).show();
-                    Log.e("setOnItemClickListener", e.toString());
-                    return;
-                }
+                String deviceName = deviceList.get(position).name;;
+                String deviceMacAddress = deviceList.get(position).macAddress;
+                makeText(getContext(), "mac_addr is "+deviceMacAddress, LENGTH_LONG);
 
                 // 2. do GET /connect/<mac_addr>
-                request.makeRequest( sharedHostname +"/connect/" + deviceMacAddress, true, deviceName+" is connected ", null);
+                request.makeRequest( sharedHostname +"/"+requestType+"/" + deviceMacAddress, true, deviceName+" is connected ", null);
             }
         });
 

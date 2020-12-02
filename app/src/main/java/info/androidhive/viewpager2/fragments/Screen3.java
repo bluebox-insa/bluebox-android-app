@@ -37,7 +37,7 @@ public class Screen3 extends Screen2 {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_3, null);
-        init(v);
+        init(v, "connect_input");
         return v;
     }
 }

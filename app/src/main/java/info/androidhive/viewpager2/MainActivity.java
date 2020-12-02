@@ -1,18 +1,25 @@
 package info.androidhive.viewpager2;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import info.androidhive.viewpager2.databinding.ActivityFragmentViewPagerBinding;
+import info.androidhive.viewpager2.databinding.ActivityMainBinding;
 import info.androidhive.viewpager2.fragments.Screen1;
 import info.androidhive.viewpager2.fragments.Screen2;
 import info.androidhive.viewpager2.fragments.Screen3;
@@ -21,13 +28,14 @@ import info.androidhive.viewpager2.fragments.Screen4;
 public class MainActivity extends AppCompatActivity {
 
     public static RequestHelper request;
-    ActivityFragmentViewPagerBinding binding;
-    String[] tabTitles = new String[]{"\u278A", "\u278B", "\u278C", "\u278D"};
+    ActivityMainBinding binding;
+
+    String[] tabTitles = new String[]{"\u25CB", "\u25CB", "\u25CB", "\u25CB"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityFragmentViewPagerBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // static request object
@@ -38,6 +46,39 @@ public class MainActivity extends AppCompatActivity {
 
         binding.viewPager.setAdapter(new ViewPagerFragmentAdapter(this));
 
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tab.setText("\u25CF");
+                switch (tab.getPosition()) {
+                    case 0:
+                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_1));
+                        break;
+                    case 1:
+                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_2));
+                        break;
+                    case 2:
+                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_3));
+                        break;
+                    case 3:
+                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_4));
+                        break;
+                    default:
+                        Log.e("onTabSelected", "tab.getPosition() is not include in [0:3] as expected.");
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                tab.setText("\u25CB");
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
         // attaching tab mediator
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> tab.setText(tabTitles[position])).attach();
     }

@@ -35,6 +35,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Hide status bar on launch
+        try {
+            this.getSupportActionBar().hide();
+        } catch (NullPointerException e){
+            Log.e("OnCreate", "Status bar not found");
+        }
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -146,9 +154,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * setImmersiveMode()
-     *
-     * Hides the ugly system bars at the top and bottom of the application
+     * setImmersiveMode() to hide navigation
      */
     public void setImmersiveMode() {
         // Enables regular immersive mode.
@@ -156,15 +162,16 @@ public class MainActivity extends AppCompatActivity {
         // Or for "sticky immersive," replace it with SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+
+                        // View.SYSTEM_UI_FLAG_IMMERSIVE
+                        // Set the content to appear under the system bars so that the
+                        // content doesn't resize when the system bars hide and show
+                        //  View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         // Hide the nav bar and status bar
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+                        // View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
     /**

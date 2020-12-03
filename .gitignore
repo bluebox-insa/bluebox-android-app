@@ -61,3 +61,5 @@ fastlane/readme.md
 =======
 fastlane/readme.md
 >>>>>>> 33c4dad7336a49eb3cbcf06276c99e082417531c
+build.gradle
+gradle/wrapper/gradle-wrapper.properties

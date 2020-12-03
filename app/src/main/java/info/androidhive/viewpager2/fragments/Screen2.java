@@ -1,14 +1,11 @@
 package info.androidhive.viewpager2.fragments;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -85,11 +82,9 @@ public class Screen2 extends Fragment {
                 makeText(getContext(), "mac_addr is "+deviceMacAddress, LENGTH_LONG);
 
                 // 2. do GET /connect/<mac_addr>
-                request.makeRequest( sharedHostname +"/"+requestType+"/" + deviceMacAddress, true, deviceName+" is connected ", null);
+                request.makeRequest( sharedHostname +"/"+requestType+"/" + deviceMacAddress, true, "Connexion à " + deviceName, null);
             }
         });
-
-
 
         // BUTTONS
         scanButton = v.findViewById(R.id.scanButton);
@@ -124,14 +119,13 @@ public class Screen2 extends Fragment {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                makeText(getContext(), "reset button", LENGTH_LONG).show();
-                request.makeRequest(sharedHostname+"/disconnect_all", true, "BlueBox is reset ", null);
+                request.makeRequest(sharedHostname+"/disconnect_all", true, "Réinitialisation de BlueBox", null);
             }
         });
         resetButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                request.makeRequest(sharedHostname+"/remove_all", true, "BlueBox is hard-reset", null);
+                request.makeRequest(sharedHostname+"/remove_all", true, "Hard-resetting BlueBox", null);
                 return true;
             }
         });

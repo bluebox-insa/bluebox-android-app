@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // static request object
-        request = new RequestHelper(Volley.newRequestQueue(this), this, null, null);
+        request = new RequestHelper(Volley.newRequestQueue(this), this);
 
         // removing toolbar elevation
         getSupportActionBar().setElevation(0);

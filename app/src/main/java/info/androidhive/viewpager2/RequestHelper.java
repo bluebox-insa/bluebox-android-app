@@ -1,10 +1,10 @@
 package info.androidhive.viewpager2;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -22,22 +22,19 @@ import java.util.concurrent.TimeUnit;
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.makeText;
 
+
 public class RequestHelper {
 
     public static final int GLOBAL_TIMEOUT_SEC = 20;
+    public ProgressDialog dialog;
     private Context context;
     private RequestQueue queue;
-    private final ProgressBar spinner;
-    private final ListView devicesComponent;
 
-
-    public RequestHelper(RequestQueue q, Context c, ProgressBar s, ListView d) {
+    public RequestHelper(RequestQueue q, Context c) {
         // context is needed for creating Toast
         this.context = c;
         // Volley queue is needed for making the requests
         this.queue = q;
-        this.spinner = s;
-        this.devicesComponent = d;
     }
 
     public interface Callback {
@@ -52,11 +49,14 @@ public class RequestHelper {
         void onResponse(JSONObject jsonObject) throws JSONException;
     }
 
-    public void makeRequest(final String url, boolean pleaseWait, final String onSuccess, final Callback cb) {
+    public void makeRequest(final String url, boolean pleaseWait, final String messageTitle, final Callback cb) {
 
         Log.d("makeRequest", "request to "+url);
         if (pleaseWait) {
-            makeText(context, "requête en cours..", LENGTH_LONG).show();
+            dialog = ProgressDialog.show(context, messageTitle,
+                    "Veuillez patienter...", true);
+            dialog.setIcon(R.drawable.ic_settings_bluetooth_24px);
+
         }
         StringRequest request = new StringRequest(Request.Method.GET, url,
             // on success
@@ -64,8 +64,15 @@ public class RequestHelper {
                 @Override
                 public void onResponse(String response) {
                     Log.d("makeRequest", "GET request to "+url+" succeeded");
-                    if (onSuccess != null) {
-                        makeText(context, onSuccess, LENGTH_LONG).show();
+
+                    dialog.dismiss();
+
+                    if (messageTitle != null) {
+                        AlertDialog.Builder successDialog= new AlertDialog.Builder(context);
+                        successDialog.setIcon(R.drawable.ic_check_circle_24px);
+                        successDialog.setTitle("Succès");
+                        successDialog.setMessage(messageTitle);
+                        successDialog.create().show();
                     }
                     if (cb != null) {
                         cb.onResponse(response);
@@ -77,7 +84,12 @@ public class RequestHelper {
             new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    makeText(context, R.string.request_failed_msg, LENGTH_LONG).show();
+                    dialog.dismiss();
+                    AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
+                    errorDialog.setIcon(R.drawable.ic_arrow_back);
+                    errorDialog.setTitle("Erreur");
+                    errorDialog.setMessage("Veuillez réessayez...");
+                    errorDialog.create().show();
                     Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error);
                 }
             });
@@ -90,23 +102,6 @@ public class RequestHelper {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         this.queue.add(request);
-    }
-
-
-    public void makeRequestAndParseJsonObject(final String url, boolean pleaseWait, final String onSuccessMsg, final CallbackJsonObject cbJsonObj) {
-
-        makeRequest(url, pleaseWait, onSuccessMsg, new Callback() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    cbJsonObj.onResponse(jsonObject);
-                } catch (JSONException e) {
-                    makeText(context, R.string.JSON_parsing_failed_msg, LENGTH_LONG).show();
-                    Log.e("makeRequest", "JSON parsing failed with error:\n"+e.toString());
-                }
-            }
-        });
     }
 
     public void makeRequestAndParseJsonArray(final String url, boolean pleaseWait, final String onSuccessMsg, final CallbackJsonArray cbJsonArr) {

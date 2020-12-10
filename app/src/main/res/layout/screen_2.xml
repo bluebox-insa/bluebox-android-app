@@ -11,9 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="116dp"
         android:gravity="center"
-        android:text="Connectez vos enceintes"
+        android:text="@string/connect_your_speakers"
         android:textColor="#FFFFFF"
-        android:textSize="@dimen/screen_title"
+        android:textSize="@dimen/h1_size"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/scanButton"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,12 +59,12 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="352dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Appareils Bluetooth à proximité"
-            android:textColor="#FFFFFF"
+            android:text="@string/nearby_bluetooth_devices"
+            android:textColor="@color/white"
             android:textSize="20dp"
             android:textStyle="bold" />
         <View

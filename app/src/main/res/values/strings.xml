@@ -1,27 +1,35 @@
 <resources>
     <string name="app_name">BlueBox</string>
 
-    <string name="request_failed_msg">&#x274C; error &#x274C;</string>
-    <string name="JSON_parsing_failed_msg">error parsing JSON</string>
-
+    <!-- Screen 1 -->
+    <string name="hello_bluebox">Bonjour, BlueBox</string>
     <string name="explications">Nous allons vous guider dans la configuration de votre Bluebox.\n\nAllons-y ! &#x23E9;&#x23E9;</string>
-    <string name="explications_fin">Votre BlueBox est configurée.\nVous pouvez maintenant jouer de la musique avec n\'importe quelle application &#x1F3B6;</string>
-
     <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
+
+    <!-- Screen 2 and 3 -->
+    <string name="connect_your_speakers">Connectez vos enceintes</string>
+    <string name="connect_your_phone">Connectez votre téléphone</string>
+
     <string name="scan">scan</string>
     <string name="reset">reinit.</string>
+
+    <string name="nearby_bluetooth_devices">Appareils Bluetooth à proximité</string>
     <string name="no_bluetooth_device_found">Aucun appareil Bluetooth n\'a été trouvé à proximité</string>
     <string name="connection_device_success"> est bien connecté à la Bluebox !</string>
     <string name="connection_device_failed"> n\'a pu être connecté à la Bluebox !</string>
+    <!-- Error messages -->
+    <string name="request_failed_msg">&#x274C; error &#x274C;</string>
+    <string name="JSON_parsing_failed_msg">error parsing JSON</string>
+
+    <!-- Screen 4 -->
+    <string name="done">C\'est fini !</string>
+    <string name="explications_fin">Votre BlueBox est configurée.\nVous pouvez maintenant jouer de la musique avec n\'importe quelle application &#x1F3B6;</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_views_slider">ViewsSliderActivity</string>
+
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-
+    <string name="first_fragment_label">Screen 1</string>
+    <string name="second_fragment_label">Screen 2</string>
+    <string name="third_fragment_label">Screen 3</string>
+    <string name="fourth_fragment_label">Screen 4</string>
 </resources>

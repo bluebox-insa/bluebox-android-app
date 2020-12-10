@@ -11,9 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Bonjour, BlueBox"
-        android:textColor="#FFFFFF"
-        android:textSize="@dimen/screen_title"
+        android:text="@string/hello_bluebox"
+        android:textColor="@color/white"
+        android:textSize="@dimen/h1_size"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -37,8 +37,8 @@
 
     <EditText
         android:id="@+id/hostnameText"
-        android:layout_width="225dp"
-        android:layout_height="46dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:textColor="@color/white"

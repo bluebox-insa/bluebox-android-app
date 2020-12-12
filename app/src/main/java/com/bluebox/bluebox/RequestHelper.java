@@ -90,7 +90,7 @@ public class RequestHelper {
                     errorDialog.setTitle("Erreur");
                     errorDialog.setMessage("Veuillez réessayez...");
                     errorDialog.create().show();
-                    Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error);
+                    Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
                 }
             });
 

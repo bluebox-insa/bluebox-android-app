@@ -2,6 +2,7 @@ package com.bluebox.bluebox.fragments;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,6 @@ public class Screen2 extends Fragment {
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    String sharedHostname;
 
     private List<Device> deviceList;
     private DeviceAdapter adapter;
@@ -43,15 +43,14 @@ public class Screen2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
-        init(v, "connect");
+        init(v,"/connect_out", "/reset_out");
         return v;
     }
 
-    public void init(View v, String requestType) {
+    public void init(View v, String connectReq, String resetReq) {
         // retrieve SharedPreferences
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
-        sharedHostname = pref.getString("hostname", null);
 
         /**-------------------------------------------------------------------------
          *                                  devicesList
@@ -82,7 +81,8 @@ public class Screen2 extends Fragment {
                 makeText(getContext(), "mac_addr is "+deviceMacAddress, LENGTH_LONG);
 
                 // 2. do GET /connect/<mac_addr>
-                request.makeRequest( sharedHostname +"/"+requestType+"/" + deviceMacAddress, true, "Connexion à " + deviceName, null);
+                String sharedHostname = pref.getString("hostname", null);
+                request.makeRequest( sharedHostname + connectReq+ "/" + deviceMacAddress, true, "Connexion à " + deviceName, null);
             }
         });
 
@@ -91,6 +91,7 @@ public class Screen2 extends Fragment {
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String sharedHostname = pref.getString("hostname", null);
                 request.makeRequestAndParseJsonArray(sharedHostname + "/scan", true, null, new RequestHelper.CallbackJsonArray() {
                     @Override
                     public void onResponse(JSONArray jsonArray) throws JSONException {
@@ -119,13 +120,15 @@ public class Screen2 extends Fragment {
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                request.makeRequest(sharedHostname+"/disconnect_all", true, "Réinitialisation de BlueBox", null);
+                String sharedHostname = pref.getString("hostname", null);
+                request.makeRequest(sharedHostname + resetReq, true, "Réinitialisation de BlueBox", null);
             }
         });
         resetButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                request.makeRequest(sharedHostname+"/remove_all", true, "Hard-resetting BlueBox", null);
+                String sharedHostname = pref.getString("hostname", null);
+                request.makeRequest(sharedHostname + resetReq +"?hard", true, "Hard-resetting BlueBox", null);
                 return true;
             }
         });

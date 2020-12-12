@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
         binding.viewPager.setAdapter(new ViewPagerFragmentAdapter(this));
 
-
         binding.next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

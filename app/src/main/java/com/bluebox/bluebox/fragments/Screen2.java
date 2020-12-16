@@ -43,7 +43,7 @@ public class Screen2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
-        init(v,"/connect_out", "/reset_out");
+        init(v,"/connect_output", "/reset_output");
         return v;
     }
 

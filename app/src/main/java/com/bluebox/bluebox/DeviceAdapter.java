@@ -12,7 +12,7 @@ import java.util.List;
 public class DeviceAdapter extends ArrayAdapter<Device> {
 
     public DeviceAdapter(Context context, List<Device> devices) {
-        super(context, 0, devices);
+        super(context, R.layout.device_item, devices);
     }
 
     @Override

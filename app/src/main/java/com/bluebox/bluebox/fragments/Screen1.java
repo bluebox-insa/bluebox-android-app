@@ -20,7 +20,7 @@ public class Screen1 extends Fragment {
 
     SharedPreferences pref;
     SharedPreferences.Editor editor;
-    EditText hostnameText;
+    //EditText hostnameText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -34,6 +34,8 @@ public class Screen1 extends Fragment {
         editor.putString("hostname", getResources().getString(R.string.hostnameDefaultVal));
         editor.commit();
 
+        //hostname manual setup
+        /*
         hostnameText = (EditText) v.findViewById(R.id.hostnameText);
         hostnameText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -48,6 +50,8 @@ public class Screen1 extends Fragment {
                 Log.d("AfterTextChanged", "hostname set to : " + input);
             }
         });
+
+         */
 
         return v;
     }

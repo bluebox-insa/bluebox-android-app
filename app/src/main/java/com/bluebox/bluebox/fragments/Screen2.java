@@ -1,14 +1,17 @@
 package com.bluebox.bluebox.fragments;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
@@ -43,11 +46,11 @@ public class Screen2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
-        init(v,"/connect_output", "/reset_output");
+        init(v,"/connect_output", "/reset_output", getResources().getString(R.string.emoji_speaker));
         return v;
     }
 
-    public void init(View v, String connectReq, String resetReq) {
+    public void init(View v, String connectReq, String resetReq, String emoji) {
         // retrieve SharedPreferences
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
@@ -67,10 +70,9 @@ public class Screen2 extends Fragment {
         deviceList.add(new Device("Enceinte 2", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("Appuyez sur SCAN pour ajouter des enceintes", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("Appuyez sur RESET pour déconnecter toutes les enceintes", "A1:B2:C3:D4:E5:F6", false));
-        adapter = new DeviceAdapter(getContext(), deviceList);
+        adapter = new DeviceAdapter(getContext(), deviceList, emoji);
         devicesComponent.setAdapter(adapter);
 
-        devicesComponent.setAdapter(adapter);
         devicesComponent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -82,7 +84,19 @@ public class Screen2 extends Fragment {
 
                 // 2. do GET /connect/<mac_addr>
                 String sharedHostname = pref.getString("hostname", null);
-                request.makeRequest( sharedHostname + connectReq+ "/" + deviceMacAddress, true, "Connexion à " + deviceName, null);
+                Boolean res = request.makeRequest( sharedHostname + connectReq+ "/" + deviceMacAddress, true, "Connexion à " + deviceName, null);
+                Log.d("Screen2 makrequests", res.toString());
+
+                // change item state and UI when connected
+                if (res == true) {
+                    deviceList.get(position).isConnected = true;
+                    adapter.notifyDataSetChanged();
+                    view.setBackgroundColor(Color.WHITE);
+                    view.setEnabled(false);
+                    view.setOnClickListener(null);
+                }else{
+                    deviceList.get(position).isConnected = false;
+                }
             }
         });
 

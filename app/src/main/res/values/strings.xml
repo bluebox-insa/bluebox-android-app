@@ -21,6 +21,10 @@
     <string name="request_failed_msg">&#x274C; error &#x274C;</string>
     <string name="JSON_parsing_failed_msg">error parsing JSON</string>
 
+    <!-- Emojis -->
+    <string name="emoji_speaker">&#x2705; &#x1F50A;</string>
+    <string name="emoji_cellphone">&#x2705; &#x1F4F1;</string>
+
     <!-- Screen 4 -->
     <string name="done">C\'est fini !</string>
     <string name="explications_fin">Votre BlueBox est configurée.\nVous pouvez maintenant jouer de la musique avec n\'importe quelle application &#x1F3B6;</string>

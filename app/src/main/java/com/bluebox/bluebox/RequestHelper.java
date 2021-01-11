@@ -49,7 +49,9 @@ public class RequestHelper {
         void onResponse(JSONObject jsonObject) throws JSONException;
     }
 
-    public void makeRequest(final String url, boolean pleaseWait, final String messageTitle, final Callback cb) {
+    public Boolean makeRequest(final String url, boolean pleaseWait, final String messageTitle, final Callback cb) {
+
+        final Boolean[] res = {false};
 
         Log.d("makeRequest", "request to "+url);
         if (pleaseWait) {
@@ -63,10 +65,9 @@ public class RequestHelper {
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
+                    res[0] = true;
                     Log.d("makeRequest", "GET request to "+url+" succeeded");
-
                     dialog.dismiss();
-
                     if (messageTitle != null) {
                         AlertDialog.Builder successDialog= new AlertDialog.Builder(context);
                         successDialog.setIcon(R.drawable.ic_checkmark_filled);
@@ -84,6 +85,7 @@ public class RequestHelper {
             new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    res[0] = false;
                     dialog.dismiss();
                     AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
                     errorDialog.setIcon(R.drawable.ic_arrow_previous);
@@ -102,6 +104,7 @@ public class RequestHelper {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         this.queue.add(request);
+        return res[0];
     }
 
     public void makeRequestAndParseJsonArray(final String url, boolean pleaseWait, final String onSuccessMsg, final CallbackJsonArray cbJsonArr) {

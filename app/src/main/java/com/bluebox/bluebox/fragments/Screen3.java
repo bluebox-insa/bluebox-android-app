@@ -14,7 +14,7 @@ public class Screen3 extends Screen2 {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_3, null);
-        init(v, "/connect_input", "/reset_input");
+        init(v, "/connect_input", "/reset_input", getResources().getString(R.string.emoji_cellphone));
         return v;
     }
 }

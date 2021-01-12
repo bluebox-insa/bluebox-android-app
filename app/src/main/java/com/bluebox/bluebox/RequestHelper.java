@@ -25,7 +25,7 @@ import static android.widget.Toast.makeText;
 
 public class RequestHelper {
 
-    public static final int GLOBAL_TIMEOUT_SEC = 30;
+    public static final int GLOBAL_TIMEOUT_SEC = 60;
     public ProgressDialog dialog;
     private Context context;
     private RequestQueue queue;

@@ -1,4 +1,5 @@
-BlueBox Android application
-===================
+# BlueBox Android application
 
-Forked from [ravi8x/ViewPager2-Examples](https://github.com/ravi8x/ViewPager2-Examples)
+Provides general commands to control your [Bluebox](https://github.com/bluebox-insa/bluebox)
+- :loud_sound: connect bluetooth speakers 
+- :iphone: connect smartphone to stream your favorite music

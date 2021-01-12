@@ -35,20 +35,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView1" />
 
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="286dp"
-        android:gravity="center"
-        android:text="@string/wifi_info"
-        android:textColor="@color/white"
-        android:textSize="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
-    <!--<EditText
+    <EditText
         android:id="@+id/hostnameText"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
@@ -61,7 +48,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        android:text="@string/hostnameDefaultVal" />-->
+        android:text="@string/hostnameDefaultVal" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,10 +4,7 @@
     <!-- Screen 1 -->
     <string name="hello_bluebox">Bonjour, BlueBox</string>
     <string name="explications">Nous allons vous guider dans la configuration de votre Bluebox.\n\nAllons-y ! &#x23E9;&#x23E9;</string>
-    <string name="wifi_info">Nom du reseau : raspi-webgui \n
-        Mot de passe :\n ChangeMe</string>
-    <string name="hostnameDefaultVal">http://10.3.141.1:5000</string>
-
+    <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
 
     <!-- Screen 2 and 3 -->
     <string name="connect_your_speakers">Connectez vos enceintes</string>

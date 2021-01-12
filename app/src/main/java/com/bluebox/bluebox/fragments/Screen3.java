@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 
 import com.bluebox.bluebox.R;
 
-import static android.widget.Toast.makeText;
-
 public class Screen3 extends Screen2 {
 
     @Override

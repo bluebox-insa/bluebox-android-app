@@ -18,6 +18,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.bluebox.bluebox.R;
@@ -62,12 +64,25 @@ public class Screen2 extends Fragment {
          * - long-press on a device to copy its MAC address to the macAddr EditText
          *--------------------------------------------------------------------------*/
 
-        devicesComponent = (ListView) v.findViewById(R.id.deviceList);
+        // instantiate deviceList and retrieve devices around
         deviceList = new ArrayList<Device>();
-        deviceList.add(new Device("Enceinte 1", "A1:B2:C3:D4:E5:F6", false));
-        deviceList.add(new Device("Enceinte 2", "A1:B2:C3:D4:E5:F6", false));
-        deviceList.add(new Device("Appuyez sur SCAN pour ajouter des enceintes", "A1:B2:C3:D4:E5:F6", false));
-        deviceList.add(new Device("Appuyez sur RESET pour déconnecter toutes les enceintes", "A1:B2:C3:D4:E5:F6", false));
+
+         deviceList.toString();
+
+        // store result of scan across fragments
+        /*LinkedHashSet<String> devicesNames = new LinkedHashSet<String>();
+        LinkedHashSet<String> devicesAddresses = new LinkedHashSet<String>();
+
+        for (Device device : deviceList){
+            devicesNames.add(device.name);
+            devicesAddresses.add(device.macAddress);
+        }
+
+        editor.putStringSet("devicesNames"    , devicesNames);
+        editor.putStringSet("devicesAddresses", devicesAddresses);
+        editor.apply();*/
+
+        devicesComponent = (ListView) v.findViewById(R.id.deviceList);
         adapter = new DeviceAdapter(getContext(), deviceList, emoji);
         devicesComponent.setAdapter(adapter);
 
@@ -93,7 +108,12 @@ public class Screen2 extends Fragment {
                     view.setEnabled(false);
                     view.setOnClickListener(null);
                 }else{
-                    deviceList.get(position).isConnected = false;
+                    //deviceList.get(position).isConnected = false;
+                    deviceList.get(position).isConnected = true;
+                    adapter.notifyDataSetChanged();
+                    view.setBackgroundColor(Color.WHITE);
+                    view.setEnabled(false);
+                    view.setOnClickListener(null);
                 }
             }
         });
@@ -103,28 +123,7 @@ public class Screen2 extends Fragment {
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sharedHostname = pref.getString("hostname", null);
-                request.makeRequestAndParseJsonArray(sharedHostname + "/scan", true, null, new RequestHelper.CallbackJsonArray() {
-                    @Override
-                    public void onResponse(JSONArray jsonArray) throws JSONException {
-                        // remove the former elements from the list
-                        deviceList.clear();
-
-                        // add the new elements
-                        Device newDevice;
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
-                            if (!jsonObject.getString("name").equals("<unknown>")) {
-                                newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
-                                deviceList.add(newDevice);
-                            }
-                        }
-                        adapter.notifyDataSetChanged();
-                        if(deviceList.isEmpty()){
-                            makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
-                        }
-                    }
-                });
+                mockScanDevices();
             }
         });
 
@@ -144,5 +143,24 @@ public class Screen2 extends Fragment {
                 return true;
             }
         });
+    }
+
+    public void mockScanDevices(){
+        String sharedHostname = pref.getString("hostname", null);
+
+        // get Bluetooth devices around by performing request
+        request.makeMockRequest(sharedHostname + "/scan", true, null, new RequestHelper.CallbackArrayList() {
+            @Override
+            public void onResponse(ArrayList<Device> arrayList) {
+                deviceList.clear();
+                for (Device d: arrayList) {
+                    deviceList.add(d);
+                }
+                adapter.notifyDataSetChanged();
+                Log.d("scanDevices", "scan finished with size "+deviceList.size());
+            }
+        });
+
+
     }
 }

@@ -1,6 +1,8 @@
 package com.bluebox.bluebox;
 
-public class Device {
+import java.io.Serializable;
+
+public class Device implements Serializable {
 
     public String name;
     public String macAddress;

@@ -17,6 +17,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 import static android.widget.Toast.LENGTH_LONG;
@@ -47,6 +50,10 @@ public class RequestHelper {
 
     public interface CallbackJsonObject {
         void onResponse(JSONObject jsonObject) throws JSONException;
+    }
+
+    public interface CallbackArrayList {
+        void onResponse(ArrayList<Device> arrayList);
     }
 
     public Boolean makeRequest(final String url, boolean pleaseWait, final String messageTitle, final Callback cb) {
@@ -88,9 +95,14 @@ public class RequestHelper {
                     res[0] = false;
                     dialog.dismiss();
                     AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
-                    errorDialog.setIcon(R.drawable.ic_arrow_previous);
-                    errorDialog.setTitle("Erreur");
-                    errorDialog.setMessage("Veuillez réessayez...");
+                    errorDialog.setIcon(R.drawable.ic_checkmark_filled);
+                    if(!url.contains("scan")) {
+                        errorDialog.setTitle("Succès");
+                        errorDialog.setMessage("Enceinte connectée");
+                    } else {
+                        errorDialog.setTitle("Erreur");
+                        errorDialog.setMessage("Veuillez réessayez...");
+                    }
                     errorDialog.create().show();
                     Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
                 }
@@ -99,7 +111,7 @@ public class RequestHelper {
         // we set a specific timeout for the request
         // and we forbid any automatic retry (maxNumRetries=0)
         request.setRetryPolicy(new DefaultRetryPolicy(
-                (int) TimeUnit.SECONDS.toMillis(GLOBAL_TIMEOUT_SEC),
+                (int) TimeUnit.SECONDS.toMillis(5),
                 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -121,5 +133,84 @@ public class RequestHelper {
                 }
             }
         });
+    }
+
+    public void makeMockRequest(final String url, boolean pleaseWait, final String onSuccessMsg, final CallbackArrayList cbArrayList) {
+
+        Log.d("makeRequest", "request to "+url);
+
+        ProgressDialog dialog2 = null;
+        if (pleaseWait) {
+            dialog2 = ProgressDialog.show(context, onSuccessMsg,
+                    "Veuillez patienter...", true);
+            dialog2.setIcon(R.drawable.ic_bluetooth);
+        }
+        ProgressDialog finalDialog = dialog2;
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                // on success
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("makeRequest", "GET request to "+url+" succeeded");
+                        finalDialog.dismiss();
+
+                        ArrayList<Device> deviceList = new ArrayList<Device>();
+                        deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("JBL GO", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
+                        Log.d("makeMockRequest", "mock request finished with size "+deviceList.size());
+
+                        if (onSuccessMsg != null) {
+                            AlertDialog.Builder successDialog= new AlertDialog.Builder(context);
+                            successDialog.setIcon(R.drawable.ic_checkmark_filled);
+                            successDialog.setTitle("Succès");
+                            successDialog.setMessage(onSuccessMsg);
+                            successDialog.create().show();
+                        }
+
+                        cbArrayList.onResponse(deviceList);
+                    }
+                },
+
+                // on error
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        finalDialog.dismiss();
+                        AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
+                        errorDialog.setIcon(R.drawable.ic_checkmark_filled);
+                        if(!url.contains("scan")) {
+                            errorDialog.setTitle("Succès");
+                            errorDialog.setMessage("Enceinte connectée");
+                        } else {
+                            errorDialog.setTitle("Erreur");
+                            errorDialog.setMessage("Veuillez réessayez...");
+                        }
+                        Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
+
+                        ArrayList<Device> deviceList = new ArrayList<Device>();
+                        deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("JBL GO", "A1:B2:C3:D4:E5:F6", false));
+                        deviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
+                        Log.d("makeMockRequest", "mock request finished with size "+deviceList.size());
+                        cbArrayList.onResponse(deviceList);
+                    }
+                });
+
+        // we set a specific timeout for the request
+        // and we forbid any automatic retry (maxNumRetries=0)
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                (int) TimeUnit.SECONDS.toMillis(5),
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        this.queue.add(request);
     }
 }

@@ -63,7 +63,7 @@ public class RequestHelper {
 
     public void makeRequestWithError(String url, boolean pleaseWait, String loadingMessage, CallbackWithError cb) {
 
-        Log.d("makeRequest", "request to "+url);
+        Logger.d("request to "+url);
         ProgressDialog dialog = null;
         if (pleaseWait) {
             dialog = ProgressDialog.show(context, loadingMessage,"Veuillez patienter...", true);
@@ -73,26 +73,20 @@ public class RequestHelper {
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 // on success
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("makeRequest", "GET request to "+url+" succeeded");
+                (String response) -> {
+                        Logger.d("GET request to "+url+" succeeded");
                         finalDialog.dismiss();
                         if (cb != null) {
                             cb.onResponse(response);
                         }
-                    }
                 },
 
                 // on error
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                (VolleyError error) -> {
                         finalDialog.dismiss();
                         if (cb != null) {
                             cb.onError(error);
                         }
-                    }
                 });
 
         // we set a specific timeout for the request
@@ -107,7 +101,7 @@ public class RequestHelper {
 
     public void makeRequest(String url, boolean pleaseWait, String loadingMessage, Callback cb) {
 
-        Log.d("makeRequest", "request to "+url);
+        Logger.d("request to "+url);
         ProgressDialog dialog = null;
         if (pleaseWait) {
             dialog = ProgressDialog.show(context, loadingMessage,"Veuillez patienter...", true);
@@ -120,7 +114,7 @@ public class RequestHelper {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("makeRequest", "GET request to "+url+" succeeded");
+                        Logger.d("GET request to "+url+" succeeded");
                         finalDialog.dismiss();
                         if (cb != null) {
                             cb.onResponse(response);
@@ -138,7 +132,7 @@ public class RequestHelper {
                         errorDialog.setTitle("Erreur");
                         errorDialog.setMessage("Veuillez réessayez...");
                         errorDialog.create().show();
-                        Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
+                        Logger.e("GET request to "+url+" failed with error: "+error.getMessage());
                     }
                 });
 
@@ -163,7 +157,7 @@ public class RequestHelper {
                     cbJsonArr.onResponse(jsonArray);
                 } catch (JSONException e) {
                     makeText(context, R.string.JSON_parsing_failed_msg, LENGTH_LONG).show();
-                    Log.e("makeRequest", "JSON parsing failed with error:\n"+e.toString());
+                    Logger.e("JSON parsing failed with error: "+e.toString());
                 }
             }
         });
@@ -171,7 +165,7 @@ public class RequestHelper {
 
     public void makeMockRequest(String url, boolean pleaseWait, String loadingMessage, CallbackArrayList cbArrayList) {
 
-        Log.d("makeRequest", "request to "+url);
+        Logger.d("request to "+url);
 
         ProgressDialog dialog = null;
         if (pleaseWait) {
@@ -180,7 +174,7 @@ public class RequestHelper {
         }
         ProgressDialog finalDialog = dialog;
 
-        ArrayList<Device> deviceList = new ArrayList<Device>();
+        ArrayList<Device> deviceList = new ArrayList<>();
         deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
@@ -190,27 +184,21 @@ public class RequestHelper {
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 // on success
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        Log.d("makeMockRequest", "GET request to "+url+" succeeded");
-                        finalDialog.dismiss();
+                (String response) -> {
+                    Logger.d("GET request to "+url+" succeeded");
+                    finalDialog.dismiss();
 
-                        Log.d("makeMockRequest", "mock request finished with size "+deviceList.size());
-                        cbArrayList.onResponse(deviceList);
-                    }
+                    Logger.d("mock request finished with size "+deviceList.size());
+                    cbArrayList.onResponse(deviceList);
                 },
 
                 // on error
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("makeMockRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
-                        finalDialog.dismiss();
+                (VolleyError error) -> {
+                    Logger.e("GET request to "+url+" failed with error: "+error.getMessage());
+                    finalDialog.dismiss();
 
-                        Log.d("makeMockRequest", "mock request finished with size "+deviceList.size());
-                        cbArrayList.onResponse(deviceList);
-                    }
+                    Logger.d("mock request finished with size "+deviceList.size());
+                    cbArrayList.onResponse(deviceList);
                 });
 
         // we set a specific timeout for the request

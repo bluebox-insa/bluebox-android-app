@@ -29,7 +29,7 @@
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/next"
+        android:id="@+id/next_button"
         app:backgroundTint="#4D000000"
         app:tint="@color/white"
         android:alpha="90"
@@ -46,7 +46,7 @@
         app:elevation="0dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/back"
+        android:id="@+id/back_button"
         app:backgroundTint="#4D000000"
         app:tint="@color/white"
         android:alpha="90"
@@ -55,7 +55,6 @@
         android:layout_marginStart="@dimen/arrow_icons_left_right_margin"
         android:layout_marginLeft="@dimen/arrow_icons_left_right_margin"
         android:layout_marginBottom="@dimen/arrow_icons_bottom_margin"
-        android:contentDescription="next"
         app:srcCompat="@drawable/ic_arrow_previous"
         app:layout_constraintBottom_toBottomOf="parent"
         app:rippleColor="@android:color/transparent"

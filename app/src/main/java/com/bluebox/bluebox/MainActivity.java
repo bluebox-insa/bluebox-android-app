@@ -6,9 +6,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.adapter.FragmentViewHolder;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.android.volley.toolbox.Volley;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e){
-            Log.e("OnCreate", "Status bar not found");
+            Logger.e("Status bar not found");
         }
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -48,9 +48,10 @@ public class MainActivity extends AppCompatActivity {
         // removing toolbar elevation
         getSupportActionBar().setElevation(0);
 
+        // attaching our FragmentAdapter to the MainActivity: the main logic is done in FragmentAdapter
         binding.viewPager.setAdapter(new ViewPagerFragmentAdapter(this));
 
-        binding.next.setOnClickListener(new View.OnClickListener() {
+        binding.nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int currentPosition = binding.tabLayout.getSelectedTabPosition();
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        binding.back.setOnClickListener(new View.OnClickListener() {
+        binding.backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int currentPosition = binding.tabLayout.getSelectedTabPosition();
@@ -74,27 +75,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.setText("\u25CF");
+
                 switch (tab.getPosition()) {
                     case 0:
-                        binding.back.setVisibility(View.INVISIBLE);
+                        binding.backButton.setVisibility(View.INVISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_1));
                         break;
                     case 1:
-                        binding.back.setVisibility(View.VISIBLE);
+                        binding.backButton.setVisibility(View.VISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_2));
                         break;
                     case 2:
-                        binding.back.setVisibility(View.VISIBLE);
+                        binding.backButton.setVisibility(View.VISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_3));
-                        binding.next.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_next));
+                        binding.nextButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_next));
                         break;
                     case 3:
-                        binding.back.setVisibility(View.INVISIBLE);
+                        binding.backButton.setVisibility(View.INVISIBLE);
                         binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_4));
-                        binding.next.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_checkmark));
+                        binding.nextButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_checkmark));
                         break;
                     default:
-                        Log.e("onTabSelected", "tab.getPosition() is not include in [0:3] as expected.");
+                        Logger.e("tab.getPosition() is not include in [0:3] as expected.");
                         break;
                 }
             }
@@ -120,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
      * Each time, a new screen is invoked and the last screen is killed
      */
     private class ViewPagerFragmentAdapter extends FragmentStateAdapter {
+
+        private Screen2 sc2;
+        private Screen3 sc3;
 
         public ViewPagerFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
             super(fragmentActivity);

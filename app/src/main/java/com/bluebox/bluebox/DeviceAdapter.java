@@ -2,6 +2,7 @@ package com.bluebox.bluebox;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +10,17 @@ import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class DeviceAdapter extends ArrayAdapter<Device> {
-    String emoji;
 
-    public DeviceAdapter(Context context, List<Device> devices, String emoji) {
+    public DeviceAdapter(Context context, List<Device> devices) {
         super(context, R.layout.device_item, devices);
-        if(emoji == null) {
-            this.emoji = "";
-        } else {
-            this.emoji = emoji;
-        }
     }
 
+    @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -46,9 +44,11 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         //change color and text of TextView if connected !
         if (device.isConnected) {
             viewHolder.name.setTextColor(Color.BLACK);
-            viewHolder.name.setText(emoji + "  " + viewHolder.name.getText());
+            viewHolder.name.setText(device.emoji + "  " + device.name);
+//            Logger.d("got emoji "+device.emoji+" at position "+position );
+
             viewHolder.layout.setBackgroundColor(Color.WHITE);
-        }else{
+        } else {
             viewHolder.name.setTextColor(Color.WHITE);
         }
         return convertView;

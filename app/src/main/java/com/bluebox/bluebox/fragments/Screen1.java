@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 import com.bluebox.bluebox.Device;
+import com.bluebox.bluebox.Logger;
 import com.bluebox.bluebox.R;
 
 import org.json.JSONArray;
@@ -29,6 +30,9 @@ public class Screen1 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Logger.i("\n");
+        Logger.i("Screen1() created");
+
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.screen_1, container, false);
 
@@ -37,14 +41,14 @@ public class Screen1 extends Fragment {
         editor = pref.edit();
 
         // store hostname across fragements
-        Log.d("onCreateView", "Screen 1: hostname default value is "+getResources().getString(R.string.hostnameDefaultVal));
+        Logger.d("Screen 1: hostname default value is "+getResources().getString(R.string.hostnameDefaultVal));
         editor.putString("hostname", getResources().getString(R.string.hostnameDefaultVal));
 
         // store devices (the result of GET /scan) across fragments
         ArrayList<Device> deviceList = new ArrayList<>();
         JSONArray deviceListJson = new JSONArray(deviceList);
         editor.putString("devices", deviceListJson.toString());
-        editor.commit();
+        editor.apply();
 
         return v;
     }

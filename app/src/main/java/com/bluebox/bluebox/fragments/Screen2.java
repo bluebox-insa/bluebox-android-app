@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.android.volley.VolleyError;
+import com.bluebox.bluebox.Logger;
 import com.bluebox.bluebox.R;
 import com.bluebox.bluebox.RequestHelper;
 import com.bluebox.bluebox.Device;
@@ -37,16 +38,23 @@ public class Screen2 extends Fragment {
     SharedPreferences.Editor editor;
 
     private List<Device> deviceList;
-    private DeviceAdapter adapter;
     private ListView devicesComponent;
+    private DeviceAdapter adapter;
     private Button scanButton;
     private Button resetButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
-        init(v,"/connect_output", "/reset_output", getResources().getString(R.string.emoji_checkmark), true);
+        Logger.i("\n");
+        Logger.i("Screen2() created");
+        View v = inflater.inflate(R.layout.screen_2, container);
+        init(v,"/connect_output", "/reset_output", getResources().getString(R.string.emoji_speaker), true);
         return v;
+    }
+
+    public void notifyDataSetChanged(){
+        Logger.d("dataset changed");
+        adapter.notifyDataSetChanged();
     }
 
     public void init(View v, String connectReq, String resetReq, String emoji, boolean autoscanOnOpen) {
@@ -54,7 +62,7 @@ public class Screen2 extends Fragment {
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
 
-        /**-------------------------------------------------------------------------
+        /*-------------------------------------------------------------------------
          *                                  devicesList
          *
          * - the SCAN button retrieves an array of surrounding Bluetooth devices
@@ -64,79 +72,78 @@ public class Screen2 extends Fragment {
          *--------------------------------------------------------------------------*/
 
         // instantiate deviceList and retrieve devices around
-        deviceList = new ArrayList<Device>();
+        Logger.d("new ArrayList()");
+        deviceList = new ArrayList<>();
         try {
             String sharedDeviceList = pref.getString("devices", null);
-            Log.d("init", "got sharedPreferences: "+sharedDeviceList);
+            Logger.d("retrieving sharedDeviceList: "+sharedDeviceList);
             JSONArray jsonArray = new JSONArray(sharedDeviceList);
             Device newDevice;
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
                 if (!jsonObject.getString("name").equals("<unknown>")) {
-                    newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("macAddress"), jsonObject.getBoolean("isConnected"));
+                    newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("macAddress"), jsonObject.getBoolean("isConnected"), jsonObject.getString("emoji"));
                     deviceList.add(newDevice);
                 }
             }
         } catch (JSONException e) {
-            Log.e("init", "error parsing JSON "+e);
+            Logger.e("error parsing JSON "+e);
         }
 
-        devicesComponent = (ListView) v.findViewById(R.id.deviceList);
-        adapter = new DeviceAdapter(getContext(), deviceList, emoji);
+        devicesComponent = v.findViewById(R.id.deviceList);
+        adapter = new DeviceAdapter(getContext(), deviceList);
         devicesComponent.setAdapter(adapter);
 
-        devicesComponent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        devicesComponent.setOnItemClickListener(
+                (AdapterView<?> parent, View view, int position, long id) -> {
+                    // 1. retrieve informations from JSON string
+                    String deviceName = deviceList.get(position).name;
+                    String deviceMacAddress = deviceList.get(position).macAddress;
 
-                // 1. retrieve informations from JSON string
-                String deviceName = deviceList.get(position).name;;
-                String deviceMacAddress = deviceList.get(position).macAddress;
-                makeText(getContext(), "mac_addr is "+deviceMacAddress, LENGTH_LONG);
+                    // 2. do GET /connect/<mac_addr>
+                    String sharedHostname = pref.getString("hostname", null);
+                    request.makeRequestWithError(
+                            sharedHostname + connectReq + "/" + deviceMacAddress,
+                            true,
+                            "Connexion à " + deviceName,
+                            new RequestHelper.CallbackWithError() {
+                                @Override
+                                public void onResponse(String response) {
+                                    deviceList.get(position).setConnected(true);
+                                    deviceList.get(position).setEmoji(emoji);
+                                    adapter.notifyDataSetChanged();
+                                    view.setEnabled(false);
+                                    view.setOnClickListener(null);
 
-                // 2. do GET /connect/<mac_addr>
-                String sharedHostname = pref.getString("hostname", null);
-                request.makeRequestWithError(
-                        sharedHostname + connectReq + "/" + deviceMacAddress,
-                        true,
-                        "Connexion à " + deviceName,
-                        new RequestHelper.CallbackWithError() {
-                            @Override
-                            public void onResponse(String response) {
-                                deviceList.get(position).setConnected(true);
-                                adapter.notifyDataSetChanged();
-                                view.setEnabled(false);
-                                view.setOnClickListener(null);
-
-                                // edit sharedPreferences too
-                                JSONArray deviceListJson = new JSONArray();
-                                for (Device d: deviceList) {
-                                    deviceListJson.put(d.toJsonObject().toString());
-                                }
-                                editor.putString("devices", deviceListJson.toString());
-                                Log.d("mockScanDevices", "sharedPreferences <= "+deviceListJson.toString());
-                                editor.commit();
-                            }
-
-                            @Override
-                            public void onError(VolleyError error) {
-                                deviceList.get(position).setConnected(true);
-                                adapter.notifyDataSetChanged();
-                                view.setEnabled(false);
-                                view.setOnClickListener(null);
-
-                                // edit sharedPreferences too
-                                JSONArray deviceListJson = new JSONArray();
-                                for (Device d: deviceList) {
-                                    deviceListJson.put(d.toJsonObject().toString());
+                                    // edit sharedPreferences too
+                                    JSONArray deviceListJson = new JSONArray();
+                                    for (Device d: deviceList) {
+                                        deviceListJson.put(d.toJsonObject().toString());
+                                    }
                                     editor.putString("devices", deviceListJson.toString());
-                                    Log.d("mockScanDevices", "sharedPreferences <= "+deviceListJson.toString());
-                                    editor.commit();
+                                    Logger.d("sharedPreferences <= "+deviceListJson.toString());
+                                    editor.apply();
                                 }
-                            }
-                        });
-            }
-        });
+
+                                @Override
+                                public void onError(VolleyError error) {
+                                    deviceList.get(position).setConnected(true);
+                                    deviceList.get(position).setEmoji(emoji);
+                                    adapter.notifyDataSetChanged();
+                                    view.setEnabled(false);
+                                    view.setOnClickListener(null);
+
+                                    // edit sharedPreferences too
+                                    JSONArray deviceListJson = new JSONArray();
+                                    for (Device d: deviceList) {
+                                        deviceListJson.put(d.toJsonObject().toString());
+                                    }
+                                    editor.putString("devices", deviceListJson.toString());
+                                    Logger.d("sharedPreferences <= "+deviceListJson.toString());
+                                    editor.apply();
+                                }
+                            });
+                });
 
         // BUTTONS
         scanButton = v.findViewById(R.id.scanButton);
@@ -202,11 +209,9 @@ public class Screen2 extends Fragment {
             @Override
             public void onResponse(ArrayList<Device> mockDevicesList) {
                 deviceList.clear();
-                for (Device d: mockDevicesList) {
-                    deviceList.add(d);
-                }
+                deviceList.addAll(mockDevicesList);
                 adapter.notifyDataSetChanged();
-                Log.d("scanDevices", "scan finished with size "+deviceList.size());
+                Logger.d("scan finished with size "+deviceList.size());
 
                 // edit sharedPreferences too
                 JSONArray deviceListJson = new JSONArray();
@@ -214,11 +219,9 @@ public class Screen2 extends Fragment {
                     deviceListJson.put(d.toJsonObject().toString());
                 }
                 editor.putString("devices", deviceListJson.toString());
-                Log.d("mockScanDevices", "sharedPreferences <= "+deviceListJson.toString());
-                editor.commit();
+                Logger.d("sharedPreferences <= "+deviceListJson.toString());
+                editor.apply();
             }
         });
-
-
     }
 }

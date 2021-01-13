@@ -18,10 +18,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.android.volley.VolleyError;
 import com.bluebox.bluebox.R;
 import com.bluebox.bluebox.RequestHelper;
 import com.bluebox.bluebox.Device;
@@ -46,11 +45,11 @@ public class Screen2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = (ViewGroup) inflater.inflate(R.layout.screen_2, null);
-        init(v,"/connect_output", "/reset_output", getResources().getString(R.string.emoji_speaker));
+        init(v,"/connect_output", "/reset_output", getResources().getString(R.string.emoji_checkmark), true);
         return v;
     }
 
-    public void init(View v, String connectReq, String resetReq, String emoji) {
+    public void init(View v, String connectReq, String resetReq, String emoji, boolean autoscanOnOpen) {
         // retrieve SharedPreferences
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
@@ -66,21 +65,21 @@ public class Screen2 extends Fragment {
 
         // instantiate deviceList and retrieve devices around
         deviceList = new ArrayList<Device>();
-
-         deviceList.toString();
-
-        // store result of scan across fragments
-        /*LinkedHashSet<String> devicesNames = new LinkedHashSet<String>();
-        LinkedHashSet<String> devicesAddresses = new LinkedHashSet<String>();
-
-        for (Device device : deviceList){
-            devicesNames.add(device.name);
-            devicesAddresses.add(device.macAddress);
+        try {
+            String sharedDeviceList = pref.getString("devices", null);
+            Log.d("init", "got sharedPreferences: "+sharedDeviceList);
+            JSONArray jsonArray = new JSONArray(sharedDeviceList);
+            Device newDevice;
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                if (!jsonObject.getString("name").equals("<unknown>")) {
+                    newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("macAddress"), jsonObject.getBoolean("isConnected"));
+                    deviceList.add(newDevice);
+                }
+            }
+        } catch (JSONException e) {
+            Log.e("init", "error parsing JSON "+e);
         }
-
-        editor.putStringSet("devicesNames"    , devicesNames);
-        editor.putStringSet("devicesAddresses", devicesAddresses);
-        editor.apply();*/
 
         devicesComponent = (ListView) v.findViewById(R.id.deviceList);
         adapter = new DeviceAdapter(getContext(), deviceList, emoji);
@@ -97,24 +96,45 @@ public class Screen2 extends Fragment {
 
                 // 2. do GET /connect/<mac_addr>
                 String sharedHostname = pref.getString("hostname", null);
-                Boolean res = request.makeRequest( sharedHostname + connectReq+ "/" + deviceMacAddress, true, "Connexion à " + deviceName, null);
-                Log.d("Screen2 makrequests", res.toString());
+                request.makeRequestWithError(
+                        sharedHostname + connectReq + "/" + deviceMacAddress,
+                        true,
+                        "Connexion à " + deviceName,
+                        new RequestHelper.CallbackWithError() {
+                            @Override
+                            public void onResponse(String response) {
+                                deviceList.get(position).setConnected(true);
+                                adapter.notifyDataSetChanged();
+                                view.setEnabled(false);
+                                view.setOnClickListener(null);
 
-                // change item state and UI when connected
-                if (res == true) {
-                    deviceList.get(position).isConnected = true;
-                    adapter.notifyDataSetChanged();
-                    view.setBackgroundColor(Color.WHITE);
-                    view.setEnabled(false);
-                    view.setOnClickListener(null);
-                }else{
-                    //deviceList.get(position).isConnected = false;
-                    deviceList.get(position).isConnected = true;
-                    adapter.notifyDataSetChanged();
-                    view.setBackgroundColor(Color.WHITE);
-                    view.setEnabled(false);
-                    view.setOnClickListener(null);
-                }
+                                // edit sharedPreferences too
+                                JSONArray deviceListJson = new JSONArray();
+                                for (Device d: deviceList) {
+                                    deviceListJson.put(d.toJsonObject().toString());
+                                }
+                                editor.putString("devices", deviceListJson.toString());
+                                Log.d("mockScanDevices", "sharedPreferences <= "+deviceListJson.toString());
+                                editor.commit();
+                            }
+
+                            @Override
+                            public void onError(VolleyError error) {
+                                deviceList.get(position).setConnected(true);
+                                adapter.notifyDataSetChanged();
+                                view.setEnabled(false);
+                                view.setOnClickListener(null);
+
+                                // edit sharedPreferences too
+                                JSONArray deviceListJson = new JSONArray();
+                                for (Device d: deviceList) {
+                                    deviceListJson.put(d.toJsonObject().toString());
+                                    editor.putString("devices", deviceListJson.toString());
+                                    Log.d("mockScanDevices", "sharedPreferences <= "+deviceListJson.toString());
+                                    editor.commit();
+                                }
+                            }
+                        });
             }
         });
 
@@ -123,7 +143,32 @@ public class Screen2 extends Fragment {
         scanButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mockScanDevices();
+                String sharedHostname = pref.getString("hostname", null);
+                request.makeRequestAndParseJsonArray(
+                        sharedHostname + "/scan",
+                        true,
+                        "Recherche en cours",
+                        new RequestHelper.CallbackJsonArray() {
+                    @Override
+                    public void onResponse(JSONArray jsonArray) throws JSONException {
+                        // remove the former elements from the list
+                        deviceList.clear();
+
+                        // add the new elements
+                        Device newDevice;
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                            if (!jsonObject.getString("name").equals("<unknown>")) {
+                                newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
+                                deviceList.add(newDevice);
+                            }
+                        }
+                        adapter.notifyDataSetChanged();
+                        if(deviceList.isEmpty()){
+                            makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
+                        }
+                    }
+                });
             }
         });
 
@@ -143,21 +188,34 @@ public class Screen2 extends Fragment {
                 return true;
             }
         });
+
+        if (autoscanOnOpen) {
+            mockScanDevices();
+        }
     }
 
     public void mockScanDevices(){
         String sharedHostname = pref.getString("hostname", null);
 
         // get Bluetooth devices around by performing request
-        request.makeMockRequest(sharedHostname + "/scan", true, null, new RequestHelper.CallbackArrayList() {
+        request.makeMockRequest(sharedHostname + "/scan", true, "Recherche en cours", new RequestHelper.CallbackArrayList() {
             @Override
-            public void onResponse(ArrayList<Device> arrayList) {
+            public void onResponse(ArrayList<Device> mockDevicesList) {
                 deviceList.clear();
-                for (Device d: arrayList) {
+                for (Device d: mockDevicesList) {
                     deviceList.add(d);
                 }
                 adapter.notifyDataSetChanged();
                 Log.d("scanDevices", "scan finished with size "+deviceList.size());
+
+                // edit sharedPreferences too
+                JSONArray deviceListJson = new JSONArray();
+                for (Device d: deviceList) {
+                    deviceListJson.put(d.toJsonObject().toString());
+                }
+                editor.putString("devices", deviceListJson.toString());
+                Log.d("mockScanDevices", "sharedPreferences <= "+deviceListJson.toString());
+                editor.commit();
             }
         });
 

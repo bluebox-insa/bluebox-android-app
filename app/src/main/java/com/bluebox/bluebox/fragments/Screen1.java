@@ -35,16 +35,17 @@ public class Screen1 extends Fragment {
         // retrieve SharedPreferences
         pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         editor = pref.edit();
-        Log.d("onCreateView", getResources().getString(R.string.hostnameDefaultVal));
+
+        // store hostname across fragements
+        Log.d("onCreateView", "Screen 1: hostname default value is "+getResources().getString(R.string.hostnameDefaultVal));
         editor.putString("hostname", getResources().getString(R.string.hostnameDefaultVal));
 
-        // store result of scan across fragments
-        ArrayList<Device> arrayList = new ArrayList<Device>();
-
-        JSONArray jsonArray = new JSONArray(arrayList);
-
-        editor.putString("devices", jsonArray.toString());
+        // store devices (the result of GET /scan) across fragments
+        ArrayList<Device> deviceList = new ArrayList<>();
+        JSONArray deviceListJson = new JSONArray(deviceList);
+        editor.putString("devices", deviceListJson.toString());
         editor.commit();
+
         return v;
     }
 }

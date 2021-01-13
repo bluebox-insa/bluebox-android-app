@@ -22,6 +22,7 @@
     <string name="JSON_parsing_failed_msg">error parsing JSON</string>
 
     <!-- Emojis -->
+    <string name="emoji_checkmark">&#x2705;</string>
     <string name="emoji_speaker">&#x2705; &#x1F50A;</string>
     <string name="emoji_cellphone">&#x2705; &#x1F4F1;</string>
 

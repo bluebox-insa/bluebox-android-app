@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -15,7 +16,11 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
 
     public DeviceAdapter(Context context, List<Device> devices, String emoji) {
         super(context, R.layout.device_item, devices);
-        this.emoji = emoji;
+        if(emoji == null) {
+            this.emoji = "";
+        } else {
+            this.emoji = emoji;
+        }
     }
 
     @Override
@@ -30,6 +35,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         if(viewHolder == null){
             viewHolder = new DeviceViewHolder();
             viewHolder.name = (TextView) convertView.findViewById(R.id.name);
+            viewHolder.layout = (RelativeLayout) convertView.findViewById(R.id.whole_layout);
             convertView.setTag(viewHolder);
         }
 
@@ -41,6 +47,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         if (device.isConnected) {
             viewHolder.name.setTextColor(Color.BLACK);
             viewHolder.name.setText(emoji + "  " + viewHolder.name.getText());
+            viewHolder.layout.setBackgroundColor(Color.WHITE);
         }else{
             viewHolder.name.setTextColor(Color.WHITE);
         }
@@ -49,5 +56,6 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
 
     private class DeviceViewHolder {
         public TextView name;
+        public RelativeLayout layout;
     }
 }

@@ -3,6 +3,7 @@ package com.bluebox.bluebox;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -29,7 +30,6 @@ import static android.widget.Toast.makeText;
 public class RequestHelper {
 
     public static final int GLOBAL_TIMEOUT_SEC = 20;
-    public ProgressDialog dialog;
     private Context context;
     private RequestQueue queue;
 
@@ -44,6 +44,11 @@ public class RequestHelper {
         void onResponse(String response);
     }
 
+    public interface CallbackWithError {
+        void onResponse(String response);
+        void onError(VolleyError error);
+    }
+
     public interface CallbackJsonArray {
         void onResponse(JSONArray jsonArray) throws JSONException;
     }
@@ -56,57 +61,39 @@ public class RequestHelper {
         void onResponse(ArrayList<Device> arrayList);
     }
 
-    public Boolean makeRequest(final String url, boolean pleaseWait, final String messageTitle, final Callback cb) {
-
-        final Boolean[] res = {false};
+    public void makeRequestWithError(String url, boolean pleaseWait, String loadingMessage, CallbackWithError cb) {
 
         Log.d("makeRequest", "request to "+url);
+        ProgressDialog dialog = null;
         if (pleaseWait) {
-            dialog = ProgressDialog.show(context, messageTitle,
-                    "Veuillez patienter...", true);
+            dialog = ProgressDialog.show(context, loadingMessage,"Veuillez patienter...", true);
             dialog.setIcon(R.drawable.ic_bluetooth);
-
         }
-        StringRequest request = new StringRequest(Request.Method.GET, url,
-            // on success
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    res[0] = true;
-                    Log.d("makeRequest", "GET request to "+url+" succeeded");
-                    dialog.dismiss();
-                    if (messageTitle != null) {
-                        AlertDialog.Builder successDialog= new AlertDialog.Builder(context);
-                        successDialog.setIcon(R.drawable.ic_checkmark_filled);
-                        successDialog.setTitle("Succès");
-                        successDialog.setMessage(messageTitle);
-                        successDialog.create().show();
-                    }
-                    if (cb != null) {
-                        cb.onResponse(response);
-                    }
-                }
-            },
+        final ProgressDialog finalDialog = dialog;
 
-            // on error
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    res[0] = false;
-                    dialog.dismiss();
-                    AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
-                    errorDialog.setIcon(R.drawable.ic_checkmark_filled);
-                    if(!url.contains("scan")) {
-                        errorDialog.setTitle("Succès");
-                        errorDialog.setMessage("Enceinte connectée");
-                    } else {
-                        errorDialog.setTitle("Erreur");
-                        errorDialog.setMessage("Veuillez réessayez...");
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                // on success
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("makeRequest", "GET request to "+url+" succeeded");
+                        finalDialog.dismiss();
+                        if (cb != null) {
+                            cb.onResponse(response);
+                        }
                     }
-                    errorDialog.create().show();
-                    Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
-                }
-            });
+                },
+
+                // on error
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        finalDialog.dismiss();
+                        if (cb != null) {
+                            cb.onError(error);
+                        }
+                    }
+                });
 
         // we set a specific timeout for the request
         // and we forbid any automatic retry (maxNumRetries=0)
@@ -116,12 +103,59 @@ public class RequestHelper {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         this.queue.add(request);
-        return res[0];
     }
 
-    public void makeRequestAndParseJsonArray(final String url, boolean pleaseWait, final String onSuccessMsg, final CallbackJsonArray cbJsonArr) {
+    public void makeRequest(String url, boolean pleaseWait, String loadingMessage, Callback cb) {
 
-        makeRequest(url, pleaseWait, onSuccessMsg, new Callback() {
+        Log.d("makeRequest", "request to "+url);
+        ProgressDialog dialog = null;
+        if (pleaseWait) {
+            dialog = ProgressDialog.show(context, loadingMessage,"Veuillez patienter...", true);
+            dialog.setIcon(R.drawable.ic_bluetooth);
+        }
+        final ProgressDialog finalDialog = dialog;
+
+        StringRequest request = new StringRequest(Request.Method.GET, url,
+                // on success
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("makeRequest", "GET request to "+url+" succeeded");
+                        finalDialog.dismiss();
+                        if (cb != null) {
+                            cb.onResponse(response);
+                        }
+                    }
+                },
+
+                // on error
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        finalDialog.dismiss();
+                        AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
+                        errorDialog.setIcon(R.drawable.ic_checkmark_filled);
+                        errorDialog.setTitle("Erreur");
+                        errorDialog.setMessage("Veuillez réessayez...");
+                        errorDialog.create().show();
+                        Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
+                    }
+                });
+
+        // we set a specific timeout for the request
+        // and we forbid any automatic retry (maxNumRetries=0)
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                (int) TimeUnit.SECONDS.toMillis(5),
+                0,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        this.queue.add(request);
+    }
+
+
+    public void makeRequestAndParseJsonArray(String url, boolean pleaseWait, String loadingMessage, CallbackJsonArray cbJsonArr) {
+
+        makeRequest(url, pleaseWait, loadingMessage, new Callback() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -135,43 +169,34 @@ public class RequestHelper {
         });
     }
 
-    public void makeMockRequest(final String url, boolean pleaseWait, final String onSuccessMsg, final CallbackArrayList cbArrayList) {
+    public void makeMockRequest(String url, boolean pleaseWait, String loadingMessage, CallbackArrayList cbArrayList) {
 
         Log.d("makeRequest", "request to "+url);
 
-        ProgressDialog dialog2 = null;
+        ProgressDialog dialog = null;
         if (pleaseWait) {
-            dialog2 = ProgressDialog.show(context, onSuccessMsg,
-                    "Veuillez patienter...", true);
-            dialog2.setIcon(R.drawable.ic_bluetooth);
+            dialog = ProgressDialog.show(context, loadingMessage,"Veuillez patienter...", true);
+            dialog.setIcon(R.drawable.ic_bluetooth);
         }
-        ProgressDialog finalDialog = dialog2;
+        ProgressDialog finalDialog = dialog;
+
+        ArrayList<Device> deviceList = new ArrayList<Device>();
+        deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("JBL GO", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
                 // on success
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("makeRequest", "GET request to "+url+" succeeded");
+                        Log.d("makeMockRequest", "GET request to "+url+" succeeded");
                         finalDialog.dismiss();
 
-                        ArrayList<Device> deviceList = new ArrayList<Device>();
-                        deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("JBL GO", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
                         Log.d("makeMockRequest", "mock request finished with size "+deviceList.size());
-
-                        if (onSuccessMsg != null) {
-                            AlertDialog.Builder successDialog= new AlertDialog.Builder(context);
-                            successDialog.setIcon(R.drawable.ic_checkmark_filled);
-                            successDialog.setTitle("Succès");
-                            successDialog.setMessage(onSuccessMsg);
-                            successDialog.create().show();
-                        }
-
                         cbArrayList.onResponse(deviceList);
                     }
                 },
@@ -180,25 +205,9 @@ public class RequestHelper {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.e("makeMockRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
                         finalDialog.dismiss();
-                        AlertDialog.Builder errorDialog= new AlertDialog.Builder(context);
-                        errorDialog.setIcon(R.drawable.ic_checkmark_filled);
-                        if(!url.contains("scan")) {
-                            errorDialog.setTitle("Succès");
-                            errorDialog.setMessage("Enceinte connectée");
-                        } else {
-                            errorDialog.setTitle("Erreur");
-                            errorDialog.setMessage("Veuillez réessayez...");
-                        }
-                        Log.e("makeRequest", "GET request to "+url+" failed with error:\n"+error.getMessage());
 
-                        ArrayList<Device> deviceList = new ArrayList<Device>();
-                        deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("JBL GO", "A1:B2:C3:D4:E5:F6", false));
-                        deviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
                         Log.d("makeMockRequest", "mock request finished with size "+deviceList.size());
                         cbArrayList.onResponse(deviceList);
                     }
@@ -207,7 +216,7 @@ public class RequestHelper {
         // we set a specific timeout for the request
         // and we forbid any automatic retry (maxNumRetries=0)
         request.setRetryPolicy(new DefaultRetryPolicy(
-                (int) TimeUnit.SECONDS.toMillis(5),
+                (int) TimeUnit.SECONDS.toMillis(3),
                 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 

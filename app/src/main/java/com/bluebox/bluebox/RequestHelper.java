@@ -92,7 +92,7 @@ public class RequestHelper {
         // we set a specific timeout for the request
         // and we forbid any automatic retry (maxNumRetries=0)
         request.setRetryPolicy(new DefaultRetryPolicy(
-                (int) TimeUnit.SECONDS.toMillis(5),
+                (int) TimeUnit.SECONDS.toMillis(2),
                 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
@@ -176,10 +176,9 @@ public class RequestHelper {
 
         ArrayList<Device> deviceList = new ArrayList<>();
         deviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
-        deviceList.add(new Device("UE BOOM", "A1:B2:C3:D4:E5:F6", false));
+        deviceList.add(new Device("Samsung A51", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
-        deviceList.add(new Device("JBL GO", "A1:B2:C3:D4:E5:F6", false));
         deviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
 
         StringRequest request = new StringRequest(Request.Method.GET, url,
@@ -204,7 +203,7 @@ public class RequestHelper {
         // we set a specific timeout for the request
         // and we forbid any automatic retry (maxNumRetries=0)
         request.setRetryPolicy(new DefaultRetryPolicy(
-                (int) TimeUnit.SECONDS.toMillis(3),
+                (int) TimeUnit.SECONDS.toMillis(2),
                 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 

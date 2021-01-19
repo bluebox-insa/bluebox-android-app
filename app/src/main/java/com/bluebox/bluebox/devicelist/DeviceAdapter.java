@@ -1,8 +1,7 @@
-package com.bluebox.bluebox;
+package com.bluebox.bluebox.devicelist;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.bluebox.bluebox.R;
+import com.bluebox.bluebox.devicelist.Device;
 
 import java.util.List;
 

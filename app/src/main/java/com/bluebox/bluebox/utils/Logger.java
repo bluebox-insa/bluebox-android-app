@@ -1,4 +1,4 @@
-package com.bluebox.bluebox;
+package com.bluebox.bluebox.utils;
 
 import android.util.Log;
 

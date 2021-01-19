@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/Screen1"
-        android:name="com.bluebox.bluebox.fragments.Screen1"
+        android:name="com.bluebox.bluebox.screens.Screen1"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/screen_1">
 
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/Screen2"
-        android:name="com.bluebox.bluebox.fragments.Screen2"
+        android:name="com.bluebox.bluebox.screens.Screen2"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/screen_2">
 
@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/Screen3"
-        android:name="com.bluebox.bluebox.fragments.Screen3"
+        android:name="com.bluebox.bluebox.screens.Screen3"
         android:label="@string/third_fragment_label"
         tools:layout="@layout/screen_3">
 
@@ -41,7 +41,7 @@
     </fragment>
     <fragment
         android:id="@+id/Screen4"
-        android:name="com.bluebox.bluebox.fragments.Screen4"
+        android:name="com.bluebox.bluebox.screens.Screen4"
         android:label="@string/fourth_fragment_label"
         tools:layout="@layout/screen_4">
     </fragment>

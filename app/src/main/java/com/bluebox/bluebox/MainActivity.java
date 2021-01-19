@@ -6,24 +6,25 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.adapter.FragmentViewHolder;
 
 import android.os.Bundle;
 import android.view.View;
 
 import com.android.volley.toolbox.Volley;
+import com.bluebox.bluebox.utils.Logger;
+import com.bluebox.bluebox.utils.Requests;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.bluebox.bluebox.databinding.ActivityMainBinding;
-import com.bluebox.bluebox.fragments.Screen1;
-import com.bluebox.bluebox.fragments.Screen2;
-import com.bluebox.bluebox.fragments.Screen3;
-import com.bluebox.bluebox.fragments.Screen4;
+import com.bluebox.bluebox.screens.Screen1;
+import com.bluebox.bluebox.screens.Screen2;
+import com.bluebox.bluebox.screens.Screen3;
+import com.bluebox.bluebox.screens.Screen4;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static RequestHelper request;
+    public static Requests requests;
     ActivityMainBinding binding;
 
     String[] tabTitles = new String[]{"\u25CB", "\u25CB", "\u25CB", "\u25CB"};
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // static request object
-        request = new RequestHelper(Volley.newRequestQueue(this), this);
+        requests = new Requests(Volley.newRequestQueue(this), this);
 
         // removing toolbar elevation
         getSupportActionBar().setElevation(0);

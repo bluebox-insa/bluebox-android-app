@@ -1,6 +1,6 @@
-package com.bluebox.bluebox;
+package com.bluebox.bluebox.devicelist;
 
-import android.util.Log;
+import com.bluebox.bluebox.utils.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;

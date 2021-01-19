@@ -1,4 +1,4 @@
-package com.bluebox.bluebox.fragments;
+package com.bluebox.bluebox.screens;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-import com.bluebox.bluebox.Logger;
+import com.bluebox.bluebox.utils.Logger;
 import com.bluebox.bluebox.R;
 
 public class Screen4 extends Fragment {

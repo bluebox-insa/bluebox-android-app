@@ -1,9 +1,7 @@
-package com.bluebox.bluebox.fragments;
+package com.bluebox.bluebox.screens;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +18,15 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.android.volley.VolleyError;
-import com.bluebox.bluebox.Logger;
+import com.bluebox.bluebox.utils.Logger;
 import com.bluebox.bluebox.R;
-import com.bluebox.bluebox.RequestHelper;
-import com.bluebox.bluebox.Device;
-import com.bluebox.bluebox.DeviceAdapter;
+import com.bluebox.bluebox.devicelist.Device;
+import com.bluebox.bluebox.devicelist.DeviceAdapter;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.makeText;
-import static com.bluebox.bluebox.MainActivity.request;
+import static com.bluebox.bluebox.MainActivity.requests;
 
 public class Screen2 extends Fragment {
 
@@ -102,13 +98,8 @@ public class Screen2 extends Fragment {
 
                     // 2. do GET /connect/<mac_addr>
                     String sharedHostname = pref.getString("hostname", null);
-                    request.makeRequestWithError(
-                            sharedHostname + connectReq + "/" + deviceMacAddress,
-                            true,
-                            "Connexion à " + deviceName,
-                            new RequestHelper.CallbackWithError() {
-                                @Override
-                                public void onResponse(String response) {
+                    requests.makeRequest("","",
+                            (String response) -> {
                                     deviceList.get(position).setConnected(true);
                                     deviceList.get(position).setEmoji(emoji);
                                     adapter.notifyDataSetChanged();
@@ -123,10 +114,9 @@ public class Screen2 extends Fragment {
                                     editor.putString("devices", deviceListJson.toString());
                                     Logger.d("sharedPreferences <= "+deviceListJson.toString());
                                     editor.apply();
-                                }
+                                },
 
-                                @Override
-                                public void onError(VolleyError error) {
+                            error -> {
                                     deviceList.get(position).setConnected(true);
                                     deviceList.get(position).setEmoji(emoji);
                                     adapter.notifyDataSetChanged();
@@ -141,42 +131,39 @@ public class Screen2 extends Fragment {
                                     editor.putString("devices", deviceListJson.toString());
                                     Logger.d("sharedPreferences <= "+deviceListJson.toString());
                                     editor.apply();
-                                }
                             });
                 });
 
         // BUTTONS
         scanButton = v.findViewById(R.id.scanButton);
-        scanButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String sharedHostname = pref.getString("hostname", null);
-                request.makeRequestAndParseJsonArray(
-                        sharedHostname + "/scan",
-                        true,
-                        "Recherche en cours",
-                        new RequestHelper.CallbackJsonArray() {
-                    @Override
-                    public void onResponse(JSONArray jsonArray) throws JSONException {
+        scanButton.setOnClickListener(v1 -> {
+            String sharedHostname = pref.getString("hostname", null);
+            requests.makeRequestAndParseJsonArray(
+                    sharedHostname + "/scan",
+                    "Recherche en cours",
+                    (JSONArray jsonArray) -> {
                         // remove the former elements from the list
                         deviceList.clear();
 
                         // add the new elements
                         Device newDevice;
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
-                            if (!jsonObject.getString("name").equals("<unknown>")) {
-                                newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
-                                deviceList.add(newDevice);
+                        try {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
+                                if (!jsonObject.getString("name").equals("<unknown>")) {
+                                    newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
+                                    deviceList.add(newDevice);
+                                }
                             }
+                        } catch (JSONException e) {
+                            Logger.e("error parsing JSON "+e);
                         }
+
                         adapter.notifyDataSetChanged();
-                        if(deviceList.isEmpty()){
+                        if (deviceList.isEmpty()) {
                             makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
                         }
-                    }
-                });
-            }
+                    });
         });
 
         resetButton = v.findViewById(R.id.resetButton);
@@ -184,14 +171,14 @@ public class Screen2 extends Fragment {
             @Override
             public void onClick(View v) {
                 String sharedHostname = pref.getString("hostname", null);
-                request.makeRequest(sharedHostname + resetReq, true, "Réinitialisation de BlueBox", null);
+                requests.makeRequest(sharedHostname + resetReq, "Réinitialisation de BlueBox", null, null);
             }
         });
         resetButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 String sharedHostname = pref.getString("hostname", null);
-                request.makeRequest(sharedHostname + resetReq +"?hard", true, "Hard-resetting BlueBox", null);
+                requests.makeRequest(sharedHostname + resetReq +"?hard", "Hard-resetting BlueBox", null, null);
                 return true;
             }
         });
@@ -205,9 +192,7 @@ public class Screen2 extends Fragment {
         String sharedHostname = pref.getString("hostname", null);
 
         // get Bluetooth devices around by performing request
-        request.makeMockRequest(sharedHostname + "/scan", true, "Recherche en cours", new RequestHelper.CallbackArrayList() {
-            @Override
-            public void onResponse(ArrayList<Device> mockDevicesList) {
+        requests.makeFakeScan((ArrayList<Device> mockDevicesList) -> {
                 deviceList.clear();
                 deviceList.addAll(mockDevicesList);
                 adapter.notifyDataSetChanged();
@@ -221,7 +206,6 @@ public class Screen2 extends Fragment {
                 editor.putString("devices", deviceListJson.toString());
                 Logger.d("sharedPreferences <= "+deviceListJson.toString());
                 editor.apply();
-            }
         });
     }
 }

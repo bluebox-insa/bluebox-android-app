@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.android.volley.toolbox.Volley;
+import com.bluebox.bluebox.screens.FakeScreen2;
+import com.bluebox.bluebox.screens.FakeScreen3;
 import com.bluebox.bluebox.utils.Logger;
 import com.bluebox.bluebox.utils.Requests;
 import com.google.android.material.tabs.TabLayout;
@@ -129,9 +131,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private class ViewPagerFragmentAdapter extends FragmentStateAdapter {
 
-        private Screen2 sc2;
-        private Screen3 sc3;
-
         public ViewPagerFragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
             super(fragmentActivity);
         }
@@ -144,8 +143,10 @@ public class MainActivity extends AppCompatActivity {
                     return new Screen1();
                 case 1:
                     return new Screen2();
+//                    return new FakeScreen2();
                 case 2:
                     return new Screen3();
+//                    return new FakeScreen3();
                 case 3:
                     return new Screen4();
             }

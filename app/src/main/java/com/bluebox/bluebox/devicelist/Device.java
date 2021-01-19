@@ -14,18 +14,30 @@ public class Device implements Serializable {
     public String emoji;
     public boolean isConnected;
 
-    public Device(String name, String macAddress, boolean isConnected) {
+    public Device(String name, String macAddress, boolean isConnected, String emoji) {
         this.name = name;
         this.macAddress = macAddress;
         this.isConnected = isConnected;
+
         this.emoji = "";
-    }
-
-    public Device(String name, String macAddress, boolean isConnected, String emoji) {
-        this(name, macAddress, isConnected);
-
         if(emoji != null) {
             this.emoji = emoji;
+        }
+    }
+
+    public Device(JSONObject deviceJson) {
+        this.name = "";
+        this.macAddress = "";
+        this.isConnected = false;
+        this.emoji = "";
+
+        try {
+            this.name = deviceJson.getString("name");
+            this.macAddress = deviceJson.getString("macAddress");
+            this.isConnected = deviceJson.getBoolean("isConnected");
+            this.emoji = deviceJson.getString("emoji");
+        } catch (JSONException e) {
+            Logger.e("Error parsing JSON "+e);
         }
     }
 

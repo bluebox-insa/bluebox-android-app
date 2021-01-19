@@ -26,8 +26,6 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Logger.d("deviceList["+position+"] is rendered.");
-
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.device_item, parent,false);
         }
@@ -49,9 +47,9 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
         if (device.isConnected) {
             viewHolder.name.setTextColor(Color.BLACK);
             viewHolder.name.setText(device.emoji + "  " + device.name);
-//            Logger.d("got emoji "+device.emoji+" at position "+position );
-
             viewHolder.layout.setBackgroundColor(Color.WHITE);
+            viewHolder.layout.setEnabled(false);
+            viewHolder.layout.setOnClickListener(null);
         } else {
             viewHolder.name.setTextColor(Color.WHITE);
         }

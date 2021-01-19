@@ -90,34 +90,4 @@ public class Requests {
         // it will be automatically launched
         this.queue.add(request);
     }
-
-    public void makeRequestAndParseJsonArray(String url, String loadingMessage, Callback<JSONArray> cb) {
-        makeRequest(url, loadingMessage, (String response) -> {
-            try {
-                JSONArray jsonArray = new JSONArray(response);
-                cb.returnResponse(jsonArray);
-            } catch (JSONException e) {
-                makeText(context, R.string.JSON_parsing_failed_msg, LENGTH_LONG).show();
-                Logger.e("JSON parsing failed with error: "+e.toString());
-            }
-        }, null);
-    }
-
-    public void makeFakeScan(Callback<ArrayList<Device>> cb) {
-        ArrayList<Device> fakeDeviceList = new ArrayList<>();
-        fakeDeviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
-        fakeDeviceList.add(new Device("Samsung A51", "A1:B2:C3:D4:E5:F6", false));
-        fakeDeviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
-        fakeDeviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
-        fakeDeviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
-        Logger.d("fake request finished with size "+fakeDeviceList.size());
-
-        makeRequest("https://google.com", "",
-                response -> {
-                    cb.returnResponse(fakeDeviceList);
-                },
-                error -> {
-                    cb.returnResponse(fakeDeviceList);
-                });
-    }
 }

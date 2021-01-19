@@ -35,148 +35,70 @@ public class Screen2 extends Screen1 {
         Logger.i("Screen2() created");
 
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.screen_2, container);
+        View view = inflater.inflate(R.layout.screen_2, container);
 
         // Initiate the SharedPreferences object
-        this.initSharedPreferences(false);
+        initSharedPreferences(false);
 
         // Initiate the SCAN and RESET buttons
-        this.initButtons(v, "/reset_output");
+        initButtons(view, "/reset_output");
 
         // Initiate the device list
-        this.initDeviceList(v,"/connect_output", "/reset_output", getResources().getString(R.string.emoji_speaker));
+        initDeviceList(view,"/connect_output", getResources().getString(R.string.emoji_speaker));
 
         // Auto-scan
-        final ProgressDialog pleaseWaitDialog = ProgressDialog.show(getContext(), "Recherche en cours","Veuillez patienter...", true);
-        pleaseWaitDialog.setIcon(R.drawable.ic_bluetooth);
+        scanRequest();
 
-        v.postDelayed(() -> {
-            ArrayList<Device> fakeDeviceList = new ArrayList<>();
-            fakeDeviceList.add(new Device("BLP9820", "A1:B2:C3:D4:E5:F6", false));
-            fakeDeviceList.add(new Device("Samsung A51", "A1:B2:C3:D4:E5:F6", false));
-            fakeDeviceList.add(new Device("UE BOOM 2", "A1:B2:C3:D4:E5:F6", false));
-            fakeDeviceList.add(new Device("PhilipsBT", "A1:B2:C3:D4:E5:F6", false));
-            fakeDeviceList.add(new Device("Bose Revolve SoundLink", "A1:B2:C3:D4:E5:F6", false));
-
-            Logger.d("fake request finished with size "+fakeDeviceList.size());
-
-            pleaseWaitDialog.dismiss();
-            this.deviceList.clear();
-            this.deviceList.addAll(fakeDeviceList);
-            writeDeviceListAndNotifyAdapter();
-        }, 2000);
-
-        return v;
+        return view;
     }
 
 
-
-//    public void notifyDataSetChanged(){
-//        Logger.d("dataset changed");
-//        adapter.notifyDataSetChanged();
-//    }
-
     /**
-     * @param v the view
+     * @param view the view
      * @param connectReq API route for connecting a device, can be /connect_input or /connect_output
-     * @param resetReq API route for resetting, can be /reset_input or /reset_output
      * @param emoji emoji displayed next to a device name when it is connected
      */
-    public void initDeviceList(View v, String connectReq, String resetReq, String emoji) {
-        ListView devicesComponent = v.findViewById(R.id.deviceList);
+    protected void initDeviceList(View view, String connectReq, String emoji) {
+        ListView devicesComponent = view.findViewById(R.id.deviceList);
         this.adapter = new DeviceAdapter(getContext(), this.deviceList);
         devicesComponent.setAdapter(this.adapter);
 
         devicesComponent.setOnItemClickListener(
-                (AdapterView<?> parent, View view, int position, long id) -> {
-                    // 1. retrieve informations from JSON string
+                (AdapterView<?> parent, View itemView, int position, long id) -> {
+                    // 1. retrieve informations from the clicked Device
                     String deviceName = this.deviceList.get(position).name;
                     String deviceMacAddress = this.deviceList.get(position).macAddress;
-/*
-                    // 2. do GET /connect/<mac_addr>
-                    requests.makeRequest("http://fakeURL","fakeMessage",
+
+                    // 2. make a request GET /connect/<mac_addr>
+                    requests.makeRequest(
+                            this.hostname + connectReq + deviceMacAddress,
+                            "Connexion à " + deviceName,
+
+                            // 3. on success, show that the device is connected
                             (String response) -> {
-                                Logger.d("in response >");
                                 this.deviceList.get(position).setConnected(true);
                                 this.deviceList.get(position).setEmoji(emoji);
                                 writeDeviceListAndNotifyAdapter();
-//                        adapter.notifyDataSetChanged();
-//                        view.setEnabled(false);
-//                        view.setOnClickListener(null);
                             },
-                            (Object error) -> {
-                                Logger.d("in error >");
-                                this.deviceList.get(position).setConnected(true);
-                                this.deviceList.get(position).setEmoji(emoji);
-                                writeDeviceListAndNotifyAdapter();
-//                        adapter.notifyDataSetChanged();
-//                        view.setEnabled(false);
-//                        view.setOnClickListener(null);
-//
-//                                    // edit sharedPreferences too
-//                                    JSONArray deviceListJson = new JSONArray();
-//                                    for (Device d: deviceList) {
-//                                        deviceListJson.put(d.toJsonObject().toString());
-//                                    }
-//                                    editor.putString("devices", deviceListJson.toString());
-//                                    Logger.d("sharedPreferences <= "+deviceListJson.toString());
-//                                    editor.apply();
-//                            });
-                            }
-
-                    );*/
-
-                    // FAKE REQUEST
-                    final ProgressDialog pleaseWaitDialog = ProgressDialog.show(getContext(), "Connexion en cours","Veuillez patienter...", true);
-                    pleaseWaitDialog.setIcon(R.drawable.ic_bluetooth);
-
-                    v.postDelayed(() -> {
-                        pleaseWaitDialog.dismiss();
-                        this.deviceList.get(position).setConnected(true);
-                        this.deviceList.get(position).setEmoji(emoji);
-                        writeDeviceListAndNotifyAdapter();
-                    }, 2000);
-                });
+                            null
+                    );
+                }
+        );
     }
 
     /**
-     * @param v the view
+     * @param view the view
      * @param resetReq API route for resetting, can be /reset_input or /reset_output
      */
-    public void initButtons(View v, String resetReq) {
-        Button scanButton = v.findViewById(R.id.scanButton);
+    protected void initButtons(View view, String resetReq) {
+        // click on SCAN button
+        Button scanButton = view.findViewById(R.id.scanButton);
         scanButton.setOnClickListener(v1 -> {
-            readHostname();
-            requests.makeRequestAndParseJsonArray(
-                    this.hostname + "/scan",
-                    "Recherche en cours",
-                    (JSONArray jsonArray) -> {
-                        // remove the former elements from the list
-                        this.deviceList.clear();
-
-                        // add the new elements
-                        Device newDevice;
-                        try {
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject jsonObject = new JSONObject(jsonArray.getString(i));
-                                if (!jsonObject.getString("name").equals("<unknown>")) {
-                                    newDevice = new Device(jsonObject.getString("name"), jsonObject.getString("mac_address"), false);
-                                    this.deviceList.add(newDevice);
-                                }
-                            }
-                        } catch (JSONException e) {
-                            Logger.e("error parsing JSON "+e);
-                        }
-
-                        writeDeviceListAndNotifyAdapter();
-//                        this.adapter.notifyDataSetChanged();
-                        if (this.deviceList.isEmpty()) {
-                            makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
-                        }
-                    });
+            scanRequest();
         });
 
-        Button resetButton = v.findViewById(R.id.resetButton);
+        // click on RESET button
+        Button resetButton = view.findViewById(R.id.resetButton);
         resetButton.setOnClickListener(v2 -> {
             readHostname();
             requests.makeRequest(
@@ -186,11 +108,13 @@ public class Screen2 extends Screen1 {
                     null
             );
         });
+
+        // long click on RESET button
         resetButton.setOnLongClickListener(v3 -> {
             readHostname();
             requests.makeRequest(
                     this.hostname + resetReq +"?hard",
-                    "Hard-resetting BlueBox",
+                    "Hard-reset de la BlueBox",
                     null,
                     null
             );
@@ -198,25 +122,68 @@ public class Screen2 extends Screen1 {
         });
     }
 
-    public void fakeScanDevices(){
-        // get Bluetooth devices around by performing request
-        requests.makeFakeScan((ArrayList<Device> fakeDeviceList) -> {
-                deviceList.clear();
-                deviceList.addAll(fakeDeviceList);
-                Logger.d("fake scan finished with size "+deviceList.size());
-                writeDeviceListAndNotifyAdapter();
+    /**
+     * Perform a scan request and update the device list
+     */
+    protected void scanRequest() {
+        // 1. make a request GET /scan
+        requests.makeRequest(
+                this.hostname + "/scan",
+                "Recherche en cours",
 
-                // edit sharedPreferences too
-//                JSONArray deviceListJson = new JSONArray();
-//                for (Device d: deviceList) {
-//                    deviceListJson.put(d.toJsonObject().toString());
-//                }
-//                editor.putString("devices", deviceListJson.toString());
-//                Logger.d("sharedPreferences <= "+deviceListJson.toString());
-//                editor.apply();
-        });
+                // 2. on success, parse the result and update the device list
+                (String response) -> {
+                    this.deviceList.clear();
+                    Device d;
+                    try {
+                        JSONArray devicesFoundJson = new JSONArray(response);
+                        for (int i = 0; i < devicesFoundJson.length(); i++) {
+                            JSONObject deviceJson = new JSONObject(devicesFoundJson.getString(i));
+                            if (!deviceJson.getString("name").equals("<unknown>")) {
+                                d = new Device(
+                                        deviceJson.getString("name"),
+                                        deviceJson.getString("mac_address"),
+                                        false,
+                                        null
+                                );
+                                this.deviceList.add(d);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        Logger.e("error parsing JSON "+e);
+                    }
+
+                    writeDeviceListAndNotifyAdapter();
+
+                    // 3. if there is no result, print a toast message
+                    if (this.deviceList.isEmpty()) {
+                        makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
+                    }
+                },
+                // 4. on error, print a toast message
+                (Object error) -> {
+                    makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
+                }
+        );
     }
 
+    /**
+     * Write the deviceList to SharedPreferences, and notify the adapter that the data changed
+      */
+    protected void writeDeviceListAndNotifyAdapter() {
+        super.writeDeviceList();
+        if (this.adapter != null) {
+            this.adapter.notifyDataSetChanged();
+        } else {
+            Logger.w("WARNING: adapter is NULL");
+        }
+    }
+
+    /**
+     * When user switch from one screen to another, the former screen is put on pause.
+     * When user comes back, onResume is called. If shared preferences have changed in between,
+     * we should call readDeviceList() again.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -226,23 +193,6 @@ public class Screen2 extends Screen1 {
         readDeviceList();
         if (this.adapter != null) {
             this.adapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    protected void readDeviceList() {
-        super.readDeviceList();
-        if (this.adapter != null) {
-            this.adapter.notifyDataSetChanged();
-        }
-    }
-
-    protected void writeDeviceListAndNotifyAdapter() {
-        super.writeDeviceList();
-        if (this.adapter != null) {
-            this.adapter.notifyDataSetChanged();
-        } else {
-            Logger.e("WARNING: adapter is NULL");
         }
     }
 }

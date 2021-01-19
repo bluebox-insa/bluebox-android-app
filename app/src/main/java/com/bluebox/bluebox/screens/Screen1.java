@@ -88,13 +88,7 @@ public class Screen1 extends Fragment {
                 JSONObject deviceJson = new JSONObject(deviceListJson.getString(i));
 
                 if (!deviceJson.getString("name").equals("<unknown>")) {
-                    d = new Device(
-                            deviceJson.getString("name"),
-                            deviceJson.getString("macAddress"),
-                            deviceJson.getBoolean("isConnected"),
-                            deviceJson.getString("emoji")
-                    );
-
+                    d = new Device(deviceJson);
                     this.deviceList.add(d);
                 }
             }

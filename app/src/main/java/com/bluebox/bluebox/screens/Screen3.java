@@ -31,7 +31,7 @@ public class Screen3 extends Screen2 {
         this.initButtons(v, "/reset_input");
 
         // Initiate the device list
-        this.initDeviceList(v,"/connect_input", "/reset_input", getResources().getString(R.string.emoji_cellphone));
+        this.initDeviceList(v,"/connect_input", getResources().getString(R.string.emoji_cellphone));
 
         return v;
     }

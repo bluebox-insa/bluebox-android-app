@@ -24,10 +24,15 @@ import com.bluebox.bluebox.screens.Screen4;
 
 public class MainActivity extends AppCompatActivity {
 
+    // (!) bit of a hack here
+    // \u25CB is the Unicode character for an empty circle
+    // we set all tab titles to empty circles, and then when we select a tab we change its title to a filled circle
+    public final static String[] tabTitles = new String[]{"\u25CB", "\u25CB", "\u25CB", "\u25CB"};
+
+
     public static Requests requests;
     ActivityMainBinding binding;
 
-    String[] tabTitles = new String[]{"\u25CB", "\u25CB", "\u25CB", "\u25CB"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             this.getSupportActionBar().hide();
         } catch (NullPointerException e){
-            Logger.e("Status bar not found");
+            Logger.e("Could not hide Android status bar: "+e);
         }
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());

@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.bluebox.bluebox.R;
 import com.bluebox.bluebox.devicelist.Device;
+import com.bluebox.bluebox.utils.Logger;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class DeviceAdapter extends ArrayAdapter<Device> {
     @NonNull
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        Logger.d("deviceList["+position+"] is rendered.");
 
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.device_item, parent,false);

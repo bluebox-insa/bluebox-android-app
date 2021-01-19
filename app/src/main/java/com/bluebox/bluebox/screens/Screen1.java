@@ -2,7 +2,6 @@ package com.bluebox.bluebox.screens;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +24,8 @@ public class Screen1 extends Fragment {
 
     protected SharedPreferences pref;
     protected SharedPreferences.Editor editor;
-    private String hostname;
-    private ArrayList<Device> deviceList;
+    protected String hostname;
+    protected ArrayList<Device> deviceList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,42 +36,50 @@ public class Screen1 extends Fragment {
         View v = inflater.inflate(R.layout.screen_1, container, false);
 
         // Initiate the SharedPreferences objects
-        this.initSharedPreferences();
+        this.initSharedPreferences(true);
         return v;
     }
 
-    protected void initSharedPreferences() {
+    protected void initSharedPreferences(boolean resetPreferences) {
         // retrieve SharedPreferences
         this.pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
         this.editor = this.pref.edit();
 
+        this.hostname = getResources().getString(R.string.hostnameDefaultVal);
+        this.deviceList = new ArrayList<>();
+
         // set default values
-        Logger.d("Set default values to shared preferences");
-        setHostname(getResources().getString(R.string.hostnameDefaultVal));
-        setDeviceList(new ArrayList<>());
+        if (resetPreferences) {
+            Logger.d("Resetting shared preferences..");
+            writeHostname();
+            writeDeviceList();
+        } else {
+            readHostname();
+            readDeviceList();
+        }
     }
 
-    protected String getHostname() {
+    /*              HOSTNAME            */
+    protected void readHostname() {
         this.hostname = this.pref.getString("hostname", null);
         Logger.d("got hostname = "+this.hostname);
-        return this.hostname;
     }
 
-    protected void setHostname(String v) {
-        this.editor.putString("hostname", v);
+    protected void writeHostname() {
+        this.editor.putString("hostname", this.hostname);
         this.editor.apply();
-
-        this.hostname = v;
-        Logger.d("set hostname = "+this.hostname);
+        Logger.d("set hostname to "+this.hostname);
     }
 
-    protected ArrayList<Device> getDeviceList() {
-        this.deviceList = new ArrayList<>();
+
+    /*              DEVICE LIST            */
+    protected void readDeviceList() {
+        this.deviceList.clear();
 
         try {
             // retrieve JSON-formatted string
             String deviceListStr = this.pref.getString("devices", null);
-            Logger.d("retrieved String: "+deviceListStr);
+            Logger.d("got deviceList(JSON) = "+deviceListStr);
 
             // convert to ArrayList
             JSONArray deviceListJson = new JSONArray(deviceListStr);
@@ -94,21 +101,17 @@ public class Screen1 extends Fragment {
         } catch (JSONException e) {
             Logger.e("error parsing JSON "+e);
         }
-
-        Logger.d("got deviceList = "+this.deviceList);
-        return this.deviceList;
+        Logger.d("    deviceList(Object) = "+this.deviceList);
     }
 
-    protected void setDeviceList(ArrayList<Device> list) {
+    protected void writeDeviceList() {
         JSONArray deviceListJson = new JSONArray();
-        for (Device d: list) {
+        for (Device d: this.deviceList) {
             deviceListJson.put(d.toJsonObject().toString());
         }
+        Logger.d("set deviceList(JSON) to "+deviceListJson);
         editor.putString("devices", deviceListJson.toString());
         editor.apply();
-
-        this.deviceList = new ArrayList<>();
-        this.deviceList.addAll(list);
-        Logger.d("set deviceList to "+this.deviceList);
+        Logger.d("    deviceList(Object) to " + this.deviceList);
     }
 }

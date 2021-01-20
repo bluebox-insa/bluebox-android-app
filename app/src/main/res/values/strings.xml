@@ -9,7 +9,7 @@
 
     <!-- Screen 1 -->
     <string name="create_an_access_point">Créez un point d\'accès Wi-Fi</string>
-    <string name="create_hotspot">Configurez un point d\'accès (hotspot) sur votre smartphone avec les nom et le mot de passe affichés à l\'écran.\nUne fois branchée, votre BlueBox s'y connectera automatiquement.</string>
+    <string name="create_hotspot">Configurez un point d\'accès (hotspot) sur votre smartphone avec les nom et le mot de passe affichés à l\'écran.\nVotre BlueBox s\'y connectera automatiquement.</string>
     <string name="APN_1">SSID :\npassword :</string>
     <string name="APN_2">bluebox\nbluebox1234</string>
 

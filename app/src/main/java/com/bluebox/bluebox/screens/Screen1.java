@@ -1,31 +1,18 @@
 package com.bluebox.bluebox.screens;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-import androidx.fragment.app.Fragment;
-
-import com.bluebox.bluebox.devicelist.Device;
-import com.bluebox.bluebox.utils.Logger;
 import com.bluebox.bluebox.R;
+import com.bluebox.bluebox.utils.Logger;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import static com.bluebox.bluebox.utils.ScanIpAddresses.scanIpAddresses;
 
-import java.util.ArrayList;
-
-import static android.content.Context.MODE_PRIVATE;
-
-public class Screen1 extends Fragment {
-
-    protected SharedPreferences pref;
-    protected SharedPreferences.Editor editor;
-    protected String hostname;
-    protected ArrayList<Device> deviceList;
+public class Screen1 extends Screen0 {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -33,79 +20,30 @@ public class Screen1 extends Fragment {
         Logger.i("Screen1() created");
 
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.screen_1, container, false);
+        View view = inflater.inflate(R.layout.screen_1, container);
 
-        // Initiate the SharedPreferences objects
-        this.initSharedPreferences(true);
-        return v;
+        // Initiate the SharedPreferences object
+        initSharedPreferences(false);
+
+        init(view);
+        return view;
     }
 
-    protected void initSharedPreferences(boolean resetPreferences) {
-        // retrieve SharedPreferences
-        this.pref = getActivity().getSharedPreferences("all", MODE_PRIVATE);
-        this.editor = this.pref.edit();
+    public void init(View view) {
+        Button openSettings = view.findViewById(R.id.openSettings);
+        openSettings.setOnClickListener(v2 -> {
+            Intent tetherSettings = new Intent();
+            tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+            startActivity(tetherSettings);
+        });
 
-        this.hostname = getResources().getString(R.string.hostnameDefaultVal);
-        this.deviceList = new ArrayList<>();
-
-        // set default values
-        if (resetPreferences) {
-            Logger.d("Resetting shared preferences..");
-            writeHostname();
-            writeDeviceList();
-        } else {
-            readHostname();
-            readDeviceList();
-        }
-    }
-
-    /*              HOSTNAME            */
-    protected void readHostname() {
-        this.hostname = this.pref.getString("hostname", null);
-        Logger.d("got hostname = "+this.hostname);
-    }
-
-    protected void writeHostname() {
-        this.editor.putString("hostname", this.hostname);
-        this.editor.apply();
-        Logger.d("set hostname to "+this.hostname);
-    }
-
-
-    /*              DEVICE LIST            */
-    protected void readDeviceList() {
-        this.deviceList.clear();
-
-        try {
-            // retrieve JSON-formatted string
-            String deviceListStr = this.pref.getString("devices", null);
-            Logger.d("got deviceList(JSON) = "+deviceListStr);
-
-            // convert to ArrayList
-            JSONArray deviceListJson = new JSONArray(deviceListStr);
-            Device d;
-            for (int i = 0; i < deviceListJson.length(); i++) {
-                JSONObject deviceJson = new JSONObject(deviceListJson.getString(i));
-
-                if (!deviceJson.getString("name").equals("<unknown>")) {
-                    d = new Device(deviceJson);
-                    this.deviceList.add(d);
-                }
+        openSettings.setOnLongClickListener(v2 -> {
+            String ipFound = scanIpAddresses();
+            if (ipFound != null) {
+                this.hostname = "http://" + ipFound + ":12345";
+                writeHostname();
             }
-        } catch (JSONException e) {
-            Logger.e("error parsing JSON "+e);
-        }
-        Logger.d("    deviceList(Object) = "+this.deviceList);
-    }
-
-    protected void writeDeviceList() {
-        JSONArray deviceListJson = new JSONArray();
-        for (Device d: this.deviceList) {
-            deviceListJson.put(d.toJsonObject().toString());
-        }
-        Logger.d("set deviceList(JSON) to "+deviceListJson);
-        editor.putString("devices", deviceListJson.toString());
-        editor.apply();
-        Logger.d("    deviceList(Object) to " + this.deviceList);
+            return true;
+        });
     }
 }

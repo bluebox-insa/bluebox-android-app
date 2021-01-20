@@ -3,26 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/Screen1">
+    app:startDestination="@id/Screen0">
 
+    <fragment
+        android:id="@+id/Screen0"
+        android:name="com.bluebox.bluebox.screens.Screen0"
+        tools:layout="@layout/screen_0">
+
+        <action
+            android:id="@+id/action01"
+            app:destination="@id/Screen1" />
+    </fragment>
     <fragment
         android:id="@+id/Screen1"
         android:name="com.bluebox.bluebox.screens.Screen1"
-        android:label="@string/first_fragment_label"
         tools:layout="@layout/screen_1">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            android:id="@+id/action12"
             app:destination="@id/Screen2" />
     </fragment>
     <fragment
         android:id="@+id/Screen2"
         android:name="com.bluebox.bluebox.screens.Screen2"
-        android:label="@string/second_fragment_label"
         tools:layout="@layout/screen_2">
 
         <action
-            android:id="@+id/action_SecondFragment_to_ThirdFragment"
+            android:id="@+id/action23"
             app:destination="@id/Screen3" />
 
         <argument
@@ -32,17 +39,15 @@
     <fragment
         android:id="@+id/Screen3"
         android:name="com.bluebox.bluebox.screens.Screen3"
-        android:label="@string/third_fragment_label"
         tools:layout="@layout/screen_3">
 
         <action
-            android:id="@+id/action_ThirdFragment_to_FourthFragment"
+            android:id="@+id/action34"
             app:destination="@id/Screen4" />
     </fragment>
     <fragment
         android:id="@+id/Screen4"
         android:name="com.bluebox.bluebox.screens.Screen4"
-        android:label="@string/fourth_fragment_label"
         tools:layout="@layout/screen_4">
     </fragment>
 </navigation>

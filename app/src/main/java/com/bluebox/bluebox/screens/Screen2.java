@@ -1,8 +1,6 @@
 package com.bluebox.bluebox.screens;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import com.bluebox.bluebox.utils.Logger;
 import com.bluebox.bluebox.R;
 import com.bluebox.bluebox.devicelist.Device;
@@ -25,7 +21,7 @@ import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.makeText;
 import static com.bluebox.bluebox.MainActivity.requests;
 
-public class Screen2 extends Screen1 {
+public class Screen2 extends Screen0 {
 
     protected DeviceAdapter adapter;
 
@@ -93,9 +89,7 @@ public class Screen2 extends Screen1 {
     protected void initButtons(View view, String resetReq) {
         // click on SCAN button
         Button scanButton = view.findViewById(R.id.scanButton);
-        scanButton.setOnClickListener(v1 -> {
-            scanRequest();
-        });
+        scanButton.setOnClickListener(v1 -> scanRequest());
 
         // click on RESET button
         Button resetButton = view.findViewById(R.id.resetButton);
@@ -157,13 +151,11 @@ public class Screen2 extends Screen1 {
 
                     // 3. if there is no result, print a toast message
                     if (this.deviceList.isEmpty()) {
-                        makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
+                        makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG).show();
                     }
                 },
                 // 4. on error, print a toast message
-                (Object error) -> {
-                    makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG);
-                }
+                (error) -> makeText(getContext(), R.string.no_bluetooth_device_found, LENGTH_LONG).show()
         );
     }
 

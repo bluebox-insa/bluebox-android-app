@@ -22,17 +22,17 @@ public class Screen3 extends Screen2 {
         Logger.i("Screen3() created");
 
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.screen_3, container);
+        View view = inflater.inflate(R.layout.screen_3, container);
 
         // Initiate the SharedPreferences object
         this.initSharedPreferences(false);
 
         // Initiate the SCAN and RESET buttons
-        this.initButtons(v, "/reset_input");
+        this.initButtons(view, "/reset_input");
 
         // Initiate the device list
-        this.initDeviceList(v,"/connect_input", getResources().getString(R.string.emoji_cellphone));
+        this.initDeviceList(view,"/connect_input", getResources().getString(R.string.emoji_cellphone));
 
-        return v;
+        return view;
     }
 }

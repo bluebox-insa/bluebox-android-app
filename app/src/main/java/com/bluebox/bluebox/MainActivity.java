@@ -9,17 +9,17 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TableLayout;
 
 import com.android.volley.toolbox.Volley;
-import com.bluebox.bluebox.screens.FakeScreen2;
-import com.bluebox.bluebox.screens.FakeScreen3;
+import com.bluebox.bluebox.screens.Screen1;
 import com.bluebox.bluebox.utils.Logger;
 import com.bluebox.bluebox.utils.Requests;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.bluebox.bluebox.databinding.ActivityMainBinding;
-import com.bluebox.bluebox.screens.Screen1;
+import com.bluebox.bluebox.screens.Screen0;
 import com.bluebox.bluebox.screens.Screen2;
 import com.bluebox.bluebox.screens.Screen3;
 import com.bluebox.bluebox.screens.Screen4;
@@ -29,16 +29,17 @@ public class MainActivity extends AppCompatActivity {
     // (!) bit of a hack here
     // \u25CB is the Unicode character for an empty circle
     // we set all tab titles to empty circles, and then when we select a tab we change its title to a filled circle
-    public final static String[] tabTitles = new String[]{"\u25CB", "\u25CB", "\u25CB", "\u25CB"};
-
+    public final static String[] tabTitles = new String[]{"\u25CB", "\u25CB", "\u25CB", "\u25CB", "\u25CB"};
 
     public static Requests requests;
     ActivityMainBinding binding;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Hide status bar on launch
         try {
@@ -47,80 +48,81 @@ public class MainActivity extends AppCompatActivity {
             Logger.e("Could not hide Android status bar: "+e);
         }
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        // static request object
-        requests = new Requests(Volley.newRequestQueue(this), this);
-
         // removing toolbar elevation
         getSupportActionBar().setElevation(0);
 
         // attaching our FragmentAdapter to the MainActivity: the main logic is done in FragmentAdapter
         binding.viewPager.setAdapter(new ViewPagerFragmentAdapter(this));
 
-        binding.nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        // => next screen button
+        binding.nextButton.setOnClickListener((View v1) -> {
                 int currentPosition = binding.tabLayout.getSelectedTabPosition();
-                if (currentPosition < 3) {
+                if (currentPosition < tabTitles.length-1) {
                     binding.tabLayout.selectTab(binding.tabLayout.getTabAt(currentPosition+1));
                 } else {
                     MainActivity.this.finish();
                 }
-            }
         });
 
-        binding.backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        // <= previous screen button
+        binding.backButton.setOnClickListener((View v2) -> {
                 int currentPosition = binding.tabLayout.getSelectedTabPosition();
                 binding.tabLayout.selectTab(binding.tabLayout.getTabAt(currentPosition-1));
-            }
         });
 
-        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                tab.setText("\u25CF");
+        binding.tabLayout.addOnTabSelectedListener(new CustomOnTabSelectedListener());
 
-                switch (tab.getPosition()) {
-                    case 0:
-                        binding.backButton.setVisibility(View.INVISIBLE);
-                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_1));
-                        break;
-                    case 1:
-                        binding.backButton.setVisibility(View.VISIBLE);
-                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_2));
-                        break;
-                    case 2:
-                        binding.backButton.setVisibility(View.VISIBLE);
-                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_3));
-                        binding.nextButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_next));
-                        break;
-                    case 3:
-                        binding.backButton.setVisibility(View.INVISIBLE);
-                        binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_4));
-                        binding.nextButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_checkmark));
-                        break;
-                    default:
-                        Logger.e("tab.getPosition() is not include in [0:3] as expected.");
-                        break;
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                tab.setText("\u25CB");
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-        // attaching tab mediator
+        // attach tab mediator
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> tab.setText(tabTitles[position])).attach();
+
+        // initialize static Requests object
+        requests = new Requests(Volley.newRequestQueue(this), this);
+    }
+
+    /**
+     * OnTabSelectedListener()
+     *
+     * Set buttons visible or invisible depending on the screen (e.g. on first screen there should not be a "<= return" button)
+     * And change the background of the bottom tab layout
+     */
+    private class CustomOnTabSelectedListener implements TabLayout.OnTabSelectedListener {
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) {
+            tab.setText("\u25CF");
+
+            switch (tab.getPosition()) {
+                case 0:
+                case 1:
+                    binding.backButton.setVisibility(View.INVISIBLE);
+                    binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_1));
+                    break;
+                case 2:
+                    binding.backButton.setVisibility(View.VISIBLE);
+                    binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_2));
+                    break;
+                case 3:
+                    binding.backButton.setVisibility(View.VISIBLE);
+                    binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_3));
+                    binding.nextButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_arrow_next));
+                    break;
+                case 4:
+                    binding.backButton.setVisibility(View.INVISIBLE);
+                    binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_4));
+                    binding.nextButton.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_checkmark));
+                    break;
+                default:
+                    Logger.e("tab.getPosition() is not include in [0:4] as expected.");
+                    break;
+            }
+        }
+
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) {
+            tab.setText("\u25CB");
+        }
+
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) {}
     }
 
     /**
@@ -140,17 +142,19 @@ public class MainActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0:
-                    return new Screen1();
+                    return new Screen0();
                 case 1:
+                    return new Screen1();
+                case 2:
                     return new Screen2();
 //                    return new FakeScreen2();
-                case 2:
+                case 3:
                     return new Screen3();
 //                    return new FakeScreen3();
-                case 3:
+                case 4:
                     return new Screen4();
             }
-            return new Screen1();
+            return new Screen0();
         }
 
         @Override

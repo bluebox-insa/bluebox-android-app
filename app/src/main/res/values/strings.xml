@@ -1,10 +1,17 @@
 <resources>
     <string name="app_name">BlueBox</string>
 
-    <!-- Screen 1 -->
+    <!-- Screen 0 -->
     <string name="hello_bluebox">Bonjour, BlueBox</string>
     <string name="explications">Nous allons vous guider dans la configuration de votre Bluebox.\n\nAllons-y ! &#x23E9;&#x23E9;</string>
     <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
+
+    <!-- Screen 1 -->
+    <string name="create_an_access_point">Créez un point d\'accès Wi-Fi</string>
+    <string name="SSID">            SSID: bluebox</string>
+    <string name="password">mot de passe: bluebox1234</string>
+    <string name="APN_1">SSID :\npassword :</string>
+    <string name="APN_2">bluebox\nbluebox1234</string>
 
     <!-- Screen 2 and 3 -->
     <string name="connect_your_speakers">Connectez vos enceintes</string>

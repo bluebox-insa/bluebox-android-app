@@ -42,7 +42,7 @@ public class FakeScreen2 extends Screen2 {
         initButtons(view, "/reset_output");
 
         // Initiate the device list
-        initDeviceList(view,"/connect_output", getResources().getString(R.string.emoji_speaker));
+        initDeviceList(view,"/connect_output/", getResources().getString(R.string.emoji_speaker));
 
         // Fake auto-scan
         fakeAutoScan(view);

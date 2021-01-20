@@ -25,7 +25,7 @@ public class FakeScreen3 extends FakeScreen2 {
         initButtons(view, "/reset_input");
 
         // Initiate the device list
-        initDeviceList(view,"/connect_input", getResources().getString(R.string.emoji_cellphone));
+        initDeviceList(view,"/connect_input/", getResources().getString(R.string.emoji_cellphone));
 
         // No fake auto-scan, contrary to FakeScreen2
         // fakeAutoScan(view);

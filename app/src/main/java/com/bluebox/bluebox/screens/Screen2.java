@@ -40,7 +40,7 @@ public class Screen2 extends Screen0 {
         initButtons(view, "/reset_output");
 
         // Initiate the device list
-        initDeviceList(view,"/connect_output", getResources().getString(R.string.emoji_speaker));
+        initDeviceList(view,"/connect_output/", getResources().getString(R.string.emoji_speaker));
 
         // Auto-scan
         scanRequest();

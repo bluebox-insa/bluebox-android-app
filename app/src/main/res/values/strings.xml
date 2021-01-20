@@ -5,7 +5,7 @@
     <string name="hello_bluebox">Bonjour, BlueBox</string>
     <string name="explications">Nous allons vous guider dans la configuration de votre BlueBox. &#x23E9;\n\n\nBranchez la BlueBox à un câble micro-USB avant de continuer &#x1F50C;&#x26A1;</string>
     <string name="todolist">&#x2460; créer un hotspot Wi-Fi\n&#x2461; sélectionner les enceintes à connecter\n&#x2462; sélectionner le téléphone</string>
-    <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
+    <string name="hostnameDefaultVal">http://192.168.43.137:5000</string>
 
     <!-- Screen 1 -->
     <string name="create_an_access_point">Créez un point d\'accès Wi-Fi</string>

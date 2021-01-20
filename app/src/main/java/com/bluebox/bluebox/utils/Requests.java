@@ -26,7 +26,7 @@ import static android.widget.Toast.makeText;
 public class Requests {
 
     // the timeout before a request fails, in seconds
-    public static final int TIMEOUT_BEFORE_ERROR = 20;
+    public static final int TIMEOUT_BEFORE_ERROR = 10;
 
     // RequestQueue is the object from the Volley library needed for making the requests
     protected RequestQueue queue;

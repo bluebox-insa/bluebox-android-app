@@ -92,8 +92,11 @@ public class MainActivity extends AppCompatActivity {
 
             switch (tab.getPosition()) {
                 case 0:
-                case 1:
                     binding.backButton.setVisibility(View.INVISIBLE);
+                    binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_0));
+                    break;
+                case 1:
+                    binding.backButton.setVisibility(View.VISIBLE);
                     binding.tabLayout.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.back_slide_1));
                     break;
                 case 2:

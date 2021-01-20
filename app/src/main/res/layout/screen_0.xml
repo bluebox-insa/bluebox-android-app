@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/back_slide_1">
+    android:background="@drawable/back_slide_0">
 
     <TextView
         android:id="@+id/textView1"
@@ -14,12 +14,12 @@
         android:text="@string/hello_bluebox"
         android:textColor="@color/white"
         android:textSize="@dimen/h1_size"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/textView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:textStyle="bold"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
@@ -29,26 +29,11 @@
         android:text="@string/explications"
         android:textColor="@color/white"
         android:textSize="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/hostnameText"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView1" />
-
-    <EditText
-        android:id="@+id/hostnameText"
-        android:layout_width="220dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        android:text="@string/hostnameDefaultVal" />
+        app:layout_constraintTop_toBottomOf="@+id/textView1" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

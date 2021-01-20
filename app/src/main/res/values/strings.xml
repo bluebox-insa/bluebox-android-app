@@ -3,13 +3,13 @@
 
     <!-- Screen 0 -->
     <string name="hello_bluebox">Bonjour, BlueBox</string>
-    <string name="explications">Nous allons vous guider dans la configuration de votre Bluebox.\n\nAllons-y ! &#x23E9;&#x23E9;</string>
+    <string name="explications">Nous allons vous guider dans la configuration de votre BlueBox. &#x23E9;\n\n\nBranchez la BlueBox à un câble micro-USB avant de continuer &#x1F50C;&#x26A1;</string>
+    <string name="todolist">&#x2460; créer un hotspot Wi-Fi\n&#x2461; sélectionner les enceintes à connecter\n&#x2462; sélectionner le téléphone</string>
     <string name="hostnameDefaultVal">http://192.168.0.137:5000</string>
 
     <!-- Screen 1 -->
     <string name="create_an_access_point">Créez un point d\'accès Wi-Fi</string>
-    <string name="SSID">            SSID: bluebox</string>
-    <string name="password">mot de passe: bluebox1234</string>
+    <string name="create_hotspot">Configurez un point d\'accès (hotspot) sur votre smartphone avec les nom et le mot de passe affichés à l\'écran.\nUne fois branchée, votre BlueBox s'y connectera automatiquement.</string>
     <string name="APN_1">SSID :\npassword :</string>
     <string name="APN_2">bluebox\nbluebox1234</string>
 
@@ -38,10 +38,4 @@
     <string name="explications_fin">Votre BlueBox est configurée.\nVous pouvez maintenant jouer de la musique avec n\'importe quelle application &#x1F3B6;</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">Screen 1</string>
-    <string name="second_fragment_label">Screen 2</string>
-    <string name="third_fragment_label">Screen 3</string>
-    <string name="fourth_fragment_label">Screen 4</string>
 </resources>

@@ -73,7 +73,7 @@
         android:id="@+id/openSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="configurer un\npoint d'accès"
+        android:text="connecter la bluebox\nau point d'accès"
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/linear2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +102,7 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textView_connexion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

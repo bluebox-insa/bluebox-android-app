@@ -37,6 +37,7 @@ public class Screen0 extends Fragment {
 
         // Initiate the SharedPreferences objects
         this.initSharedPreferences(true);
+
         return v;
     }
 
